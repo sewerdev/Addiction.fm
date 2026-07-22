@@ -1,5 +1,7 @@
 # Addiction.fm
 
+<img width="1920" height="943" alt="image" src="https://github.com/user-attachments/assets/d2dbc559-8fd1-46c0-86ee-353131e91e73" />
+
 **Generative radio. One button — sound built for your mental state.**
 
 Addiction.fm is a browser-based generative audio app with no playlists, no accounts, and no ads. Pick a state — get a unique sound that never repeats.
