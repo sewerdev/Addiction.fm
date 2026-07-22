@@ -66,7 +66,7 @@
 
 ## Автор
 
-Сделано **Sewerbox** / [Ponosus](https://github.com/Ponosus)
+Сделано **Sewerbox** / [sewerdev](https://github.com/sewerdev)
 Telegram: [@VestronVulture](https://t.me/VestronVulture)
 
 ---
