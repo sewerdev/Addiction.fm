@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Addiction.fm — генеративное радио</title>
+<title>Addiction.fm - генеративное радио</title>
 <style>
   :root{
     --bg:#FFFFFF; --surface:#F9F8F7; --surface2:#F0EFED; --border:#E6E5E3;
@@ -212,8 +212,8 @@
   </header>
 
   <section class="hero">
-    <h1 data-i18n="heroTitle">Одна кнопка — и звук создаётся под ваше состояние.</h1>
-    <p data-i18n="heroText">Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, рекомендаций и выбор���� треков.</p>
+    <h1 data-i18n="heroTitle">Одна кнопка - и звук создаётся под ваше состояние.</h1>
+    <p data-i18n="heroText">Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, реко��ендаций и выбор���� треков.</p>
   </section>
 
   <section class="moods" role="group" aria-label="Состояния">
@@ -228,14 +228,14 @@
       <span class="dot"></span>
       <h2 data-i18n="focus">ФОКУС</h2>
       <span class="genre" data-i18n="focusGenre">глубокий эмбиент</span>
-      <span class="desc" data-i18n="focusDesc">Только глубокий басс и тёмные пэды — никаких ударных, идеально для работы.</span>
+      <span class="desc" data-i18n="focusDesc">Только глубокий басс и тёмные пэды - никаких ударных, идеально для работы.</span>
       <span class="stateline" data-i18n="selected">● выбрано</span>
     </button>
     <button class="mood" data-m="calm">
       <span class="dot"></span>
       <h2 data-i18n="calm">ПОКОЙ</h2>
       <span class="genre" data-i18n="calmGenre">дрон · дождь · мягкие колокольчики</span>
-      <span class="desc" data-i18n="calmDesc">Медленный гул, шум дождя и приглушённые колокольчики — идеально для расслабления.</span>
+      <span class="desc" data-i18n="calmDesc">Медленный гул, шум дождя и приглушённые колокольчики - идеально для расслабления.</span>
       <span class="stateline" data-i18n="selected">● выбрано</span>
     </button>
   </section>
@@ -273,8 +273,8 @@
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
-      <button class="chip" id="shuffleBtn" title="Перемешать брейки по трекам" style="font-size:13px;">🔀 перемешать</button>
-      <span style="font-size:12px;color:var(--text2)">каждый трек — свой брейк</span>
+      <button class="chip" id="shuffleBtn" data-i18n="shuffleBtn" style="font-size:13px;">🔀 перемешать</button>
+      <span id="shuffleHint" data-i18n="shuffleHint" style="font-size:12px;color:var(--text2)">каждый трек - свой брейк</span>
     </div>
     <div class="hint" id="hint"></div>
   </div>
@@ -320,56 +320,65 @@ function saveCfg(){
 const I18N = {
   ru: {
     tagline:"генеративное радио",
-    heroTitle:"Одна кнопка — и звук создаётся под ваше состояние.",
+    heroTitle:"Одна кнопка - и звук создаётся под ваше состояние.",
     heroText:"Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, рекомендаций и выбора треков.",
     drive:"РАЗГОН", driveGenre:"амен-брейк · джангл · ~180 BPM",
     driveDesc:"Быстрые нарезанные брейки и мягкое пианино.",
     focus:"ФОКУС", focusGenre:"глубокий эмбиент",
-    focusDesc:"Только глубокий басс и тёмные пэды — никаких ударных, идеально для работы.",
+    focusDesc:"Только глубокий басс и тёмные пэды - никаких ударных, идеально для работы.",
     calm:"ПОКОЙ", calmGenre:"дрон · дождь · мягкие колокольчики",
-    calmDesc:"Медленный гул, шум дождя и приглушённые колокольчики — идеально для расслабления.",
+    calmDesc:"Медленный гул, шум дождя и приглушённые колокольчики - идеально для расслабления.",
     selected:"● выбрано", ready:"готов к запуску", playing:"играет", paused:"на паузе",
     track:"трек", intensity:"интенсивность", volume:"громкость",
     menuLang:"Язык", menuAbout:"ℹ О приложении", close:"Закрыть",
     aboutCredit:"ПОЖАЛУЙСТА, ЕСЛИ ВЫ ИСПОЛЬЗУЕТЕ ЭТОТ КОД, УКАЖИТЕ СОЗДАТЕЛЯ",
-    aboutText:"Генеративное радио для мозга: три состояния, бесконечный неповторяющийся звук, синтез в реальном времени через Web Audio API. Наследник AddictionTune — без стриминга и зависимостей.",
-    hint:"<kbd>Space</kbd> — пауза · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> — состояние · <kbd>V</kbd> — трек назад · <kbd>B</kbd> — трек вперёд · по окончанию таймера звук плавно гаснет",
+    aboutText:"Генеративное радио для мозга: три состояния, бесконечный неповторяющийся звук, синтез в реальном времени через Web Audio API. Наследник AddictionTune - без стриминга и зависимостей.",
+    hint:"<kbd>Space</kbd> - пауза · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> - состояние · <kbd>V</kbd> - трек назад · <kbd>B</kbd> - трек вперёд · по окончанию таймера звук плавно гаснет",
+    shuffleBtn:"🔀 перемешать",
+    shuffleHint:"каждый трек - свой брейк",
+    shuffleDone:"✔ перемешано",
     footer:'<a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a>'
   },
   en: {
     tagline:"generative radio",
-    heroTitle:"One button — and the sound is created for your state.",
+    heroTitle:"One button - and the sound is created for your state.",
     heroText:"Nothing is streamed or downloaded: the sound is synthesized right in your browser and never repeats. No accounts, no recommendations, no track picking.",
     drive:"DRIVE", driveGenre:"amen break · jungle · ~180 BPM",
-    driveDesc:"Fast chopped breaks and dark sub bass — fury and tenderness at once.",
+    driveDesc:"Fast chopped breaks and dark sub bass - fury and tenderness at once.",
     focus:"FOCUS", focusGenre:"deep ambient",
-    focusDesc:"Just deep sub bass and dark pads — no drums, perfect for work.",
+    focusDesc:"Just deep sub bass and dark pads - no drums, perfect for work.",
     calm:"CALM", calmGenre:"drone · rain · soft bells",
-    calmDesc:"Slow hum, rain noise and muffled bells — like a gentle touch.",
+    calmDesc:"Slow hum, rain noise and muffled bells - like a gentle touch.",
     selected:"● selected", ready:"ready to play", playing:"playing", paused:"paused",
     track:"track", intensity:"intensity", volume:"volume",
     menuLang:"Language", menuAbout:"ℹ About", close:"Close",
     aboutCredit:"PLEASE CREDIT THE CREATOR IF YOU USE THIS CODE",
-    aboutText:"Generative radio for your brain: three states, endless non-repeating sound, synthesized in real time with the Web Audio API. A descendant of AddictionTune — no streaming, no dependencies.",
-    hint:"<kbd>Space</kbd> — pause · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> — state · <kbd>V</kbd> — previous track · <kbd>B</kbd> — next track · sound fades out when the timer ends",
+    aboutText:"Generative radio for your brain: three states, endless non-repeating sound, synthesized in real time with the Web Audio API. A descendant of AddictionTune - no streaming, no dependencies.",
+    hint:"<kbd>Space</kbd> - pause · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> - state · <kbd>V</kbd> - previous track · <kbd>B</kbd> - next track · sound fades out when the timer ends",
+    shuffleBtn:"🔀 shuffle",
+    shuffleHint:"each track - its own break",
+    shuffleDone:"✔ shuffled",
     footer:'<a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a>'
   },
   es: {
     tagline:"radio generativa",
-    heroTitle:"Un botón — y el sonido se crea para tu estado.",
+    heroTitle:"Un botón - y el sonido se crea para tu estado.",
     heroText:"Nada se transmite ni se descarga: el sonido se sintetiza directamente en tu navegador y nunca se repite. Sin cuentas, sin recomendaciones, sin elegir pistas.",
     drive:"IMPULSO", driveGenre:"amen break · jungle · ~180 BPM",
-    driveDesc:"Breaks rápidos y troceados con un sub oscuro — furia y ternura a la vez.",
+    driveDesc:"Breaks rápidos y troceados con un sub oscuro - furia y ternura a la vez.",
     focus:"ENFOQUE", focusGenre:"ambient profundo",
-    focusDesc:"Solo sub profundo y pads oscuros — sin percusión, ideal para trabajar.",
+    focusDesc:"Solo sub profundo y pads oscuros - sin percusión, ideal para trabajar.",
     calm:"CALMA", calmGenre:"drone · lluvia · campanas suaves",
-    calmDesc:"Zumbido lento, ruido de lluvia y campanas amortiguadas — como una caricia suave.",
+    calmDesc:"Zumbido lento, ruido de lluvia y campanas amortiguadas - como una caricia suave.",
     selected:"● elegido", ready:"listo para reproducir", playing:"sonando", paused:"en pausa",
     track:"pista", intensity:"intensidad", volume:"volumen",
     menuLang:"Idioma", menuAbout:"ℹ Acerca de", close:"Cerrar",
     aboutCredit:"POR FAVOR, ACREDITA AL CREADOR SI USAS ESTE CÓDIGO",
-    aboutText:"Radio generativa para tu cerebro: tres estados, sonido infinito que nunca se repite, sintetizado en tiempo real con Web Audio API. Descendiente de AddictionTune — sin streaming ni dependencias.",
-    hint:"<kbd>Space</kbd> — pausa · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> — estado · <kbd>V</kbd> — pista anterior · <kbd>B</kbd> — pista siguiente · el sonido se desvanece al acabar el temporizador",
+    aboutText:"Radio generativa para tu cerebro: tres estados, sonido infinito que nunca se repite, sintetizado en tiempo real con Web Audio API. Descendiente de AddictionTune - sin streaming ni dependencias.",
+    hint:"<kbd>Space</kbd> - pausa · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> - estado · <kbd>V</kbd> - pista anterior · <kbd>B</kbd> - pista siguiente · el sonido se desvanece al acabar el temporizador",
+    shuffleBtn:"🔀 mezclar",
+    shuffleHint:"cada pista - su propio break",
+    shuffleDone:"✔ mezclado",
     footer:'<a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a>'
   }
 };
@@ -408,8 +417,8 @@ $("#themeBtn").addEventListener("click", () => { dark = !dark; applyTheme(); sav
 function moodColor(){ return (dark ? COLORS_DARK : COLORS)[state.mood]; }
 
 /* ================= tracks =================
-   трек — детерминированная вариация: один и тот же номер всегда даёт
-   одну и ту же тональность/прогрессию/ритм — можно мотать туда-сюда */
+   трек - детерминированная вариация: один и тот же номер всегда даёт
+   одну и ту же тональность/прогрессию/ритм - можно мотать туда-сюда */
 /* каждый пресет хранит свой номер трека */
 const trackNos = { drive: 1, focus: 1, calm: 1 };
 let trackNo = 1;
@@ -489,10 +498,10 @@ function ensureCtx(){
 }
 
 /* ---- банк настоящих брейков из breaks.js (декодируем лениво по одному).
-   Если breaks.js не подключён — разгон работает на синтезе-фолбэке ---- */
+   Если breaks.js не подключён - разгон работает на синтезе-фолбэке ---- */
 const breakBank = {};
 /* порядок брейков: breakOrder[trackIdx % n] → индекс в BREAKS[]
-   перемешивается кнопкой «Перемешать» — новый трек → новый брейк */
+   перемешивается кнопкой «Перемешать» - новый трек → новый брейк */
 let breakOrder = null;
 function ensureBreakOrder(){
   if (!window.BREAKS || !window.BREAKS.length) return;
@@ -508,8 +517,8 @@ function shuffleBreaks(){
   }
   if (state.playing) start(); /* перезапуск с новым порядком */
   const btn = $("#shuffleBtn");
-  btn.textContent = "✔ перемешано";
-  setTimeout(() => { btn.innerHTML = "🔀 перемешать"; }, 1500);
+  btn.textContent = L("shuffleDone");
+  setTimeout(() => { btn.textContent = L("shuffleBtn"); }, 1500);
 }
 function getBreak(idx, cb){
   if (!window.BREAKS || !window.BREAKS.length) return;
@@ -640,7 +649,7 @@ function pluck(dest, t, freq, v){
   g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
   o.connect(f); f.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.55);
 }
-/* тёплое «пианино» — мягкий удар, энергия в низкой середине, как у hkmori */
+/* тёплое «пианино» - мягкий удар, энергия в низкой середине, как у hkmori */
 function piano(dest, t, freqs, v){
   const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1900; f.Q.value = 0.4;
   f.connect(dest);
@@ -656,7 +665,7 @@ function piano(dest, t, freqs, v){
     });
   });
 }
-/* приглушённый колокольчик — мягкая атака, низкий фильтр, долгое затухание */
+/* приглушённый колокольчик - мягкая атака, низкий фильтр, долгое затухание */
 function bellSoft(dest, t, freq, v){
   const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 800; f.Q.value = 0.5;
   f.connect(dest);
@@ -715,8 +724,8 @@ function drone(s, freq, type, level, detune){
   o.connect(g); g.connect(s.bus); o.start();
   s.stops.push(() => { try { o.stop(); } catch(e){} });
 }
-/* шина барабанов с общим фи��ьтром — для «приглушённости» */
-/* кусок настоящего брейка: startStep/steps — в шестнадцатых его родного темпа */
+/* шина барабанов с общим фи��ьтром - для «приглушённости» */
+/* кусок настоящего брейка: startStep/steps - в шестнадцатых его родного темпа */
 function breakSlice(dest, bb, t, startStep, steps, v){
   const stepDur = 60 / bb.bpm / 4;
   const total = bb.bars * 16;
@@ -746,7 +755,7 @@ function schedule(s, stepFn, stepDurFn){
 }
 
 /* ================= musical material ================= */
-/* аккорды: [бас, голоса...] в ля-минорном мире, транспонируются вариацией */
+/* а��корды: [бас, голоса...] в ля-минорном мире, транспонируются вариацией */
 const Am=[110,220,261.63,329.63], F=[87.31,174.61,261.63,349.23], C=[130.81,261.63,329.63,392],
       G=[98,196,246.94,293.66], Em=[82.41,164.81,246.94,329.63], Dm=[73.42,146.83,220,293.66],
       Am9=[110,220,246.94,329.63], Fmaj7=[87.31,174.61,220,261.63], E7=[82.41,164.81,207.65,246.94],
@@ -773,8 +782,8 @@ const DRIVE_PATTERNS = [
   { k:[0,5,8],  s:[4,11] },
   { k:[0,10,13],s:[4,12] }
 ];
-/* амен-брейк: 2 такта по 16 шестнадцатых — k кики, s снейры, g госты.
-   Фирменная синкопа — снейр на 14-м шаге второго такта */
+/* амен-брейк: 2 такта по 16 шестнадцатых - k кики, s снейры, g госты.
+   Фирменная синкопа - снейр на 14-м шаге второго такта */
 const AMEN = [
   { k:[0,2],    s:[4,12], g:[7,9] },
   { k:[0,2,10], s:[4,14], g:[7,9] }
@@ -784,8 +793,8 @@ const CALM_BELLS = [329.63,392,440,523.25,587.33];
 
 /* ================= moods ================= */
 const BUILD = {
-  /* ФОКУС — глубокий эмбиент без ударных: только длинный саб-бас
-     (как у mutant standard — 81% энергии в низах), тёмные низкие пэды
+  /* ФОКУС - глубокий эмбиент без ударных: только длинный саб-бас
+     (как у mutant standard - 81% энергии в низах), тёмные низкие пэды
      и редкие тихие отклики в середине спектра */
   focus(s){
     const prog = PROGS[variation.prog];
@@ -805,7 +814,7 @@ const BUILD = {
       const inten = state.intensity;
       const i16 = step % 16;
       if (i16 === 0) bar++;
-      /* саб — главный голос: длинные ноты басовой линии */
+      /* саб - главный голос: длинные ноты басовой линии */
       if (i16 % 8 === 0) sub(s.bus, t, tf(bass[(i16 / 8 + bar) % bass.length]), 2.2, 0.3);
       if (i16 === 12 && Math.random() < 0.3 + inten * 0.4)
         sub(s.bus, t, tf(bass[bar % bass.length]) * 1.5, 0.8, 0.12);
@@ -817,7 +826,7 @@ const BUILD = {
     }, () => 60 / (120 + state.intensity * 20 + variation.tempoJit * 3) / 2);
   },
 
-  /* РАЗГОН — амен-брейк (как в Mr. Kill Myself): классическая двухтактовая
+  /* РАЗГОН - амен-брейк (как в Mr. Kill Myself): классическая двухтактовая
      петля с гост-снейрами и синкопой, статтеры 32-ми, жирный саб
      (~70% энергии оригинала в низах), едва слышное пианино */
   drive(s){
@@ -825,7 +834,7 @@ const BUILD = {
     const arpScale = ARPS[variation.arpStyle];
     const drums = drumBus(s, 5000 + state.intensity * 3500);
     pad(s, prog[0].slice(1).map(tf), 0.014, 7, 750);
-    /* настоящий брейк из breaks.js — у каждого трека свой */
+    /* настоящий брейк из breaks.js - у каждого трека свой */
     getBreak(variation.n - 1, bb => { if (session === s) s.breakBuf = bb; });
     let note = 3;
     schedule(s, (step, t) => {
@@ -837,13 +846,13 @@ const BUILD = {
       const fill = bar % 4 === 3 && i16 >= 12;
       if (s.breakBuf){
         /* музыкальная нарезка: брейк идёт линейно по тактам,
-           но с редкими DJ-эдитами — повтор или случайный прыжок */
+           но с редкими DJ-эдитами - повтор или случайный прыжок */
         const bb = s.breakBuf;
         const totalSteps = bb.bars * 16;
-        /* текущая позиция в брейке — линейно шагаем по 16-шаговой сетке потактово */
+        /* текущая позиция в брейке - линейно шагаем по 16-шаговой сетке потактово */
         if (!s.breakPos) s.breakPos = 0;
         let pos = s.breakPos;
-        let sliceLen = 16; /* по умолчанию — целый такт */
+        let sliceLen = 16; /* по умолчанию - целый такт */
         if (i16 === 0){
           /* на сильной доле: переходим к следующему такту брейка */
           /* редкий DJ-эффект: иногда прыгаем на другой такт брейка */
@@ -890,7 +899,7 @@ const BUILD = {
     }, () => 60 / (s.breakBuf ? s.breakBuf.bpm : 176 + state.intensity * 12 + variation.tempoJit * 2) / 4);
   },
 
-  /* ПОКОЙ — дрон, тихий дождь и мелодия приглушённых колокольчиков:
+  /* ПОКОЙ - дрон, тихий дождь и мелодия приглушённых колокольчиков:
      колокольчики теперь ведут, а не тонут в шуме */
   calm(s){
     const prog = PROGS[variation.prog];
@@ -902,7 +911,7 @@ const BUILD = {
     let bi = variation.arpStyle % CALM_BELLS.length;
     const ring = () => {
       if (session !== s) return;
-      /* шаг по шкале — неспешная мелодия, а не случайный звон */
+      /* шаг по шкале - неспешная мелодия, а не случайный звон */
       bi = Math.max(0, Math.min(CALM_BELLS.length - 1, bi + (Math.random() < 0.5 ? -1 : 1)));
       const base = tf(CALM_BELLS[bi]);
       bellSoft(s.bus, ctx.currentTime + 0.05, base, 0.1 + state.intensity * 0.06);
@@ -931,38 +940,71 @@ $("#shuffleBtn").addEventListener("click", shuffleBreaks);
 setTrack(trackNo);
 
 /* ---- запись трека ---- */
-let recRecorder = null, recChunks = [];
+/* ---- WAV-рекордер через ScriptProcessorNode -> чистый PCM -> WAV ---- */
+function pcmToWav(left, right, sr) {
+  const nc = 2, bps = 2;
+  const samples = left.length;
+  const buf = new ArrayBuffer(44 + samples * nc * bps);
+  const v = new DataView(buf);
+  const u32 = (o, x) => v.setUint32(o, x, true);
+  const u16 = (o, x) => v.setUint16(o, x, true);
+  const str = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); u32(4, 36 + samples * nc * bps); str(8, 'WAVE');
+  str(12, 'fmt '); u32(16, 16); u16(20, 1); u16(22, nc); u32(24, sr); u32(28, sr * nc * bps); u16(32, nc * bps); u16(34, 16);
+  str(36, 'data'); u32(40, samples * nc * bps);
+  let off = 44;
+  for (let i = 0; i < samples; i++) {
+    const l = Math.max(-1, Math.min(1, left[i]));
+    const r = Math.max(-1, Math.min(1, right ? right[i] : left[i]));
+    v.setInt16(off, l < 0 ? l * 32768 : l * 32767, true); off += 2;
+    v.setInt16(off, r < 0 ? r * 32768 : r * 32767, true); off += 2;
+  }
+  return new Uint8Array(buf);
+}
+let recNode = null, recPCM = { L: [], R: [] }, recActive = false;
 $("#recBtn").addEventListener("click", () => {
   const btn = $("#recBtn");
-  if (recRecorder && recRecorder.state === "recording"){
-    recRecorder.stop();
+  if (recActive) {
+    recActive = false;
+    if (recNode) { try { recNode.disconnect(); } catch(e){} recNode = null; }
+    /* собираем PCM в WAV */
+    const sr = ctx.sampleRate;
+    const L = new Float32Array(recPCM.L.reduce((s, c) => s + c.length, 0));
+    const R = new Float32Array(recPCM.R.reduce((s, c) => s + c.length, 0));
+    let pos = 0;
+    recPCM.L.forEach(c => { L.set(c, pos); pos += c.length; });
+    pos = 0;
+    recPCM.R.forEach(c => { R.set(c, pos); pos += c.length; });
+    const wav = pcmToWav(L, R, sr);
+    const blob = new Blob([wav], { type: 'audio/wav' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const mood = state.mood, n = trackNo;
+    a.download = `addiction-fm_${mood}_track${n}.wav`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 6000);
+    recPCM = { L: [], R: [] };
+    btn.className = 'recbtn done';
+    btn.textContent = '✓ сохранено';
+    setTimeout(() => { btn.className = 'recbtn'; btn.innerHTML = '⏺ rec'; }, 3000);
     return;
   }
   ensureCtx();
   if (!state.playing) start();
-  const stream = ctx._recDest.stream;
-  const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-    ? "audio/webm;codecs=opus" : "audio/ogg;codecs=opus";
-  recRecorder = new MediaRecorder(stream, { mimeType: mime });
-  recChunks = [];
-  recRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
-  recRecorder.onstop = () => {
-    const blob = new Blob(recChunks, { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    const ext = mime.includes("webm") ? "webm" : "ogg";
-    const mood = state.mood, n = trackNo;
-    a.download = `addiction-fm_${mood}_track${n}.${ext}`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-    btn.className = "recbtn done";
-    btn.textContent = "✓ сохранено";
-    setTimeout(() => { btn.className = "recbtn"; btn.innerHTML = "⏺ rec"; }, 3000);
+  recPCM = { L: [], R: [] };
+  recActive = true;
+  /* ScriptProcessorNode перехватывает поток после analyser */
+  recNode = ctx.createScriptProcessor(4096, 2, 2);
+  recNode.onaudioprocess = e => {
+    if (!recActive) return;
+    recPCM.L.push(e.inputBuffer.getChannelData(0).slice());
+    recPCM.R.push(e.inputBuffer.getChannelData(1).slice());
   };
-  recRecorder.start(1000);
-  btn.className = "recbtn recording";
-  btn.innerHTML = "⏹ стоп";
+  analyser.connect(recNode);
+  recNode.connect(ctx.destination);
+  btn.className = 'recbtn recording';
+  btn.innerHTML = '⏹ стоп';
 });
 
 const intEl = $("#intensity"), volEl = $("#volume");
