@@ -1,6 +1,6 @@
 # [Addiction.fm](http://addiction.fm/)
 
-<img width="1920" height="943" alt="image" src="https://github.com/user-attachments/assets/113699d3-5d8a-4899-a9ce-a645774320bb" />
+<img width="1920" height="941" alt="image" src="https://github.com/user-attachments/assets/d56ffb01-532f-4fb9-a675-38d7550e1f7c" />
 
 <img width="280" height="600" alt="image" src="https://github.com/user-attachments/assets/744b4274-d3a0-4d46-9767-5d77ae5a5b25" />
 
