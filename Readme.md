@@ -68,7 +68,7 @@ Requirements: **modern browser** (Chrome 90+, Firefox 88+, Safari 15+). Nothing 
 
 ## Author
 
-Made by **Sewerbox** / [Ponosus](https://github.com/Ponosus)
+Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev)
 Telegram: [@VestronVulture](https://t.me/VestronVulture)
 
 ---
