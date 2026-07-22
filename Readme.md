@@ -1,6 +1,7 @@
 # Addiction.fm
 
-<img width="1920" height="943" alt="image" src="https://github.com/user-attachments/assets/d2dbc559-8fd1-46c0-86ee-353131e91e73" />
+<img width="1920" height="943" alt="image" src="https://github.com/user-attachments/assets/113699d3-5d8a-4899-a9ce-a645774320bb" />
+
 
 **Generative radio. One button - sound built for your mental state.**
 
