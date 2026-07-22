@@ -2,7 +2,7 @@
 
 <img width="1920" height="943" alt="image" src="https://github.com/user-attachments/assets/113699d3-5d8a-4899-a9ce-a645774320bb" />
 
-<img width="540" height="1200" alt="image" src="https://github.com/user-attachments/assets/744b4274-d3a0-4d46-9767-5d77ae5a5b25" />
+<img width="220" height="600" alt="image" src="https://github.com/user-attachments/assets/744b4274-d3a0-4d46-9767-5d77ae5a5b25" />
 
 
 **Generative radio. One button - sound built for your mental state.**
