@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addiction.fm — генеративное радио</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F9F8F7; --surface2:#F0EFED; --border:#E6E5E3;
+    --text:#2C2C2B; --text2:#7D7A75; --accent:#2783DE; --accent-soft:#E5F2FC;
+  }
+  [data-theme="dark"]{
+    --bg:#191919; --surface:#202020; --surface2:#383836; --border:rgba(255,255,255,.2);
+    --text:#FFFFFF; --text2:rgba(255,255,255,.65); --accent:#5E9FE8; --accent-soft:rgba(94,159,232,.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text); font-size:16px; line-height:1.5;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  .wrap{width:100%; max-width:960px; margin:0 auto; padding:0 24px; flex:1; display:flex; flex-direction:column;}
+
+  header{display:flex; align-items:center; justify-content:space-between; padding:16px 0 8px;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; letter-spacing:-.2px;}
+  .prop{width:22px; height:22px; flex:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  /* prop spinning controlled by JS */
+
+  /* entry + micro animations */
+  @keyframes fadeUp{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:none;}}
+  @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+  @keyframes popIn{from{opacity:0; transform:scale(.96) translateY(8px);} to{opacity:1; transform:none;}}
+  header{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .05s backwards;}
+  .hero h1{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .14s backwards;}
+  .hero p{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .22s backwards;}
+  .mood:nth-child(1){animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .3s backwards;}
+  .mood:nth-child(2){animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .38s backwards;}
+  .mood:nth-child(3){animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .46s backwards;}
+  .playerwrap{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) .54s backwards;}
+  .hint, footer{animation:fadeIn .9s ease .7s backwards;}
+  .menu:not([hidden]){animation:popIn .18s ease;}
+  .overlay:not([hidden]){animation:fadeIn .22s ease;}
+  .modal{animation:popIn .26s cubic-bezier(.2,.7,.2,1);}
+  .mood{transition:background .2s ease, border-color .2s ease, transform .25s ease, box-shadow .25s ease;}
+  .mood:hover{transform:translateY(-3px); box-shadow:0 8px 22px rgba(0,0,0,.08);}
+  .iconbtn, .chip, .playbtn{transition:background .2s ease, transform .15s ease, border-color .2s ease;}
+  .iconbtn:active, .chip:active, .playbtn:active{transform:scale(.94);}
+  @media (prefers-reduced-motion: reduce){
+    /* prop JS-controlled, reduced-motion disables it */
+    header,.hero h1,.hero p,.mood,.playerwrap,.hint,footer,.menu:not([hidden]),.overlay:not([hidden]),.modal{animation:none;}
+    .mood:hover{transform:none;}
+  }
+  .logo small{font-weight:400; color:var(--text2); font-size:12px; margin-left:2px;}
+  .hbtns{display:flex; gap:8px; position:relative;}
+  .iconbtn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:44px; height:44px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface); color:var(--text); cursor:pointer; font-size:16px;
+  }
+  .iconbtn:hover{background:var(--surface2);}
+  .iconbtn:focus-visible, button:focus-visible, input:focus-visible, a:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* settings menu */
+  .menu{
+    position:absolute; top:50px; right:0; z-index:30; min-width:200px;
+    background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.08);
+  }
+  .menu-label{font-size:11.5px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px; margin:2px 4px 6px;}
+  .langrow{display:flex; gap:6px; margin-bottom:10px;}
+  .menu hr{border:none; border-top:1px solid var(--border); margin:4px 0 8px;}
+  .menuitem{
+    display:block; width:100%; text-align:left; background:none; border:none; color:var(--text);
+    font-family:inherit; font-size:14px; padding:9px 8px; border-radius:8px; cursor:pointer;
+  }
+  .menuitem:hover{background:var(--surface2);}
+
+  /* about modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:40;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay[hidden]{display:none;}
+  .modal{
+    background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    max-width:440px; width:100%; padding:28px; 
+  }
+  .modal h3{font-size:20px; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .modal p{font-size:14px; color:var(--text2); margin-bottom:12px;}
+  .modal .keys{font-size:13px; color:var(--text2); margin-bottom:14px;}
+  .modal a{color:var(--accent); text-decoration:none; font-weight:600;}
+  .modal a:hover{text-decoration:underline;}
+  .modal .closebtn{margin-top:4px;}
+  .modal .credit{margin:16px 0 0; font-size:10.5px; letter-spacing:.06em; color:var(--text2); opacity:.8;}
+
+  .hero{padding:12px 0 20px;}
+  .hero h1{font-size:30px; line-height:1.2; letter-spacing:-.4px; font-weight:700;}
+  .hero p{color:var(--text2); margin-top:6px; max-width:620px; font-size:15px;}
+
+  .moods{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  .mood{
+    text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:20px 18px 18px; cursor:pointer; color:var(--text);
+    font-family:inherit; transition:border-color .15s, background .15s; min-height:150px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .mood:hover{background:var(--surface2);}
+  .mood[data-m="drive"]{--mc:#E56458; --mcs:#FCE9E7;}
+  .mood[data-m="focus"]{--mc:#2783DE; --mcs:#E5F2FC;}
+  .mood[data-m="calm"] {--mc:#46A171; --mcs:#E8F1EC;}
+  [data-theme="dark"] .mood[data-m="drive"]{--mc:#E97366; --mcs:rgba(233,115,102,.12);}
+  [data-theme="dark"] .mood[data-m="focus"]{--mc:#5E9FE8; --mcs:rgba(94,159,232,.12);}
+  [data-theme="dark"] .mood[data-m="calm"] {--mc:#72BC8F; --mcs:rgba(114,188,143,.12);}
+  .mood.active{border-color:var(--mc); background:var(--mcs);}
+  .mood .dot{width:10px; height:10px; border-radius:50%; background:var(--mc); margin-bottom:2px;}
+  .mood h2{font-size:19px; font-weight:700; letter-spacing:.2px;}
+  .mood .genre{font-size:13px; color:var(--mc); font-weight:600;}
+  .mood .desc{font-size:13.5px; color:var(--text2);}
+  .mood .stateline{font-size:12px; color:var(--text2); margin-top:auto; padding-top:8px; visibility:hidden;}
+  .mood.active .stateline{visibility:visible; color:var(--mc); font-weight:600;}
+
+  .playerwrap{position:sticky; bottom:12px; margin-top:20px; padding-bottom:16px;}
+  .player{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:12px 16px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    box-shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
+  }
+  .playbtn{
+    width:52px; height:52px; border-radius:50%; border:none; background:var(--accent); color:#fff;
+    cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex:none;
+  }
+  .playbtn:hover{opacity:.88;}
+  .playbtn svg{width:20px; height:20px;}
+  .now{min-width:0; flex:0 0 auto;}
+  .now .title{font-weight:600; font-size:14.5px;}
+  .now .sub{font-size:12.5px; color:var(--text2);}
+  canvas#viz{width:200px; height:34px; flex:1 1 140px; max-width:260px; margin:0 auto;}
+  .ctl{display:flex; flex-direction:column; gap:2px; min-width:120px;}
+  .ctl label{font-size:11.5px; color:var(--text2); display:flex; justify-content:space-between; gap:8px;}
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none; width:130px; height:24px; background:transparent; cursor:pointer;
+  }
+  input[type="range"]::-webkit-slider-runnable-track{height:4px; border-radius:2px; background:var(--surface2); border:1px solid var(--border);}
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent);
+    margin-top:-6px; border:2px solid var(--bg);
+  }
+  input[type="range"]::-moz-range-track{height:4px; border-radius:2px; background:var(--surface2); border:1px solid var(--border);}
+  input[type="range"]::-moz-range-thumb{width:12px; height:12px; border-radius:50%; background:var(--accent); border:2px solid var(--bg);}
+  .timer{display:flex; align-items:center; gap:6px;}
+  .chip{
+    border:1px solid var(--border); background:var(--bg); color:var(--text2); border-radius:999px;
+    font-size:12.5px; padding:5px 10px; cursor:pointer; font-family:inherit; min-height:28px;
+  }
+  .chip:hover{background:var(--surface2);}
+  .chip.active{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:600;}
+  .countdown{font-variant-numeric:tabular-nums; font-size:13px; color:var(--text2); min-width:44px;}
+  .trackctl{display:flex; align-items:center; gap:4px;}
+  .trackbtn{font-size:15px; line-height:1; padding:5px 10px; letter-spacing:-1px;}
+  .trackno{font-size:12.5px; color:var(--text2); min-width:28px; text-align:center; font-variant-numeric:tabular-nums;}
+  .recbtn{border:1px solid var(--border); background:var(--bg); color:var(--text2); border-radius:999px; font-size:12px; padding:5px 11px; cursor:pointer; font-family:inherit; min-height:28px; display:flex; align-items:center; gap:5px; transition:background .15s,border-color .15s,color .15s;}
+  .recbtn:hover{background:var(--surface2);}
+  .recbtn.recording{background:#ff000022; border-color:#e03; color:#e03; animation:recpulse 1s infinite;}
+  .recbtn.done{background:#00bb4422; border-color:#0b6; color:#0a5;}
+  @keyframes recpulse{0%,100%{opacity:1}50%{opacity:.55;}}
+  .hint{margin-top:10px; font-size:12.5px; color:var(--text2);}
+  kbd{
+    background:var(--surface2); border:1px solid var(--border); border-radius:4px;
+    padding:0 5px; font-family:Menlo,Consolas,monospace; font-size:11px;
+  }
+  footer{padding:8px 0 20px; color:var(--text2); font-size:13px; margin-top:auto; text-align:center;}
+  footer a{color:var(--accent); text-decoration:none; font-weight:600;}
+  footer a:hover{text-decoration:underline;}
+
+  @media (max-width:680px){
+    .wrap{padding:0 16px;}
+    .moods{grid-template-columns:1fr;}
+    .mood{min-height:0;}
+    .hero h1{font-size:24px;}
+    canvas#viz{display:none;}
+    .playerwrap{position:static; padding-bottom:0;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <svg class="prop" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
+        <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
+        <circle cx="12" cy="12" r="2.4" fill="var(--text)"/>
+      </svg>
+      Addiction.fm <small data-i18n="tagline">генеративное радио</small>
+    </div>
+    <div class="hbtns">
+      <button class="iconbtn" id="settingsBtn" aria-label="Настройки" aria-haspopup="true">⚙</button>
+      <button class="iconbtn" id="themeBtn" aria-label="Тема">🌙</button>
+      <div class="menu" id="menu" hidden>
+        <div class="menu-label" data-i18n="menuLang">Язык</div>
+        <div class="langrow">
+          <button class="chip lang" data-lang="ru">RU</button>
+          <button class="chip lang" data-lang="en">EN</button>
+          <button class="chip lang" data-lang="es">ES</button>
+        </div>
+        <hr>
+        <button class="menuitem" id="aboutBtn" data-i18n="menuAbout">ℹ О приложении</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 data-i18n="heroTitle">Одна кнопка — и звук создаётся под ваше состояние.</h1>
+    <p data-i18n="heroText">Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, рекомендаций и выбор���� треков.</p>
+  </section>
+
+  <section class="moods" role="group" aria-label="Состояния">
+    <button class="mood" data-m="drive">
+      <span class="dot"></span>
+      <h2 data-i18n="drive">РАЗГОН</h2>
+      <span class="genre" data-i18n="driveGenre">мелодичный брейккор · ~190 BPM</span>
+      <span class="desc" data-i18n="driveDesc">Быстрые нарезанные брейки и мягкое пианино.</span>
+      <span class="stateline" data-i18n="selected">● выбрано</span>
+    </button>
+    <button class="mood active" data-m="focus">
+      <span class="dot"></span>
+      <h2 data-i18n="focus">ФОКУС</h2>
+      <span class="genre" data-i18n="focusGenre">глубокий эмбиент</span>
+      <span class="desc" data-i18n="focusDesc">Только глубокий басс и тёмные пэды — никаких ударных, идеально для работы.</span>
+      <span class="stateline" data-i18n="selected">● выбрано</span>
+    </button>
+    <button class="mood" data-m="calm">
+      <span class="dot"></span>
+      <h2 data-i18n="calm">ПОКОЙ</h2>
+      <span class="genre" data-i18n="calmGenre">дрон · дождь · мягкие колокольчики</span>
+      <span class="desc" data-i18n="calmDesc">Медленный гул, шум дождя и приглушённые колокольчики — идеально для расслабления.</span>
+      <span class="stateline" data-i18n="selected">● выбрано</span>
+    </button>
+  </section>
+
+  <div class="playerwrap">
+    <div class="player">
+      <button class="playbtn" id="playBtn" aria-label="Играть / пауза">
+        <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <div class="now">
+        <div class="title" id="nowTitle">ФОКУС</div>
+        <div class="sub" id="nowSub">готов к запуску</div>
+      </div>
+      <canvas id="viz" width="128" height="60" aria-hidden="true"></canvas>
+      <div class="trackctl" role="group" aria-label="Треки">
+        <button class="chip trackbtn" id="prevBtn" aria-label="Предыдущий трек">&#8249;&#8249;</button>
+        <span class="trackno" id="trackNo">#1</span>
+        <button class="chip trackbtn" id="nextBtn" aria-label="Следующий трек">&#8250;&#8250;</button>
+      </div>
+      <button class="recbtn" id="recBtn" title="Записать и скачать трек">⏺ rec</button>
+      <div class="ctl">
+        <label for="intensity"><span data-i18n="intensity">интенсивность</span><span id="intVal">55%</span></label>
+        <input type="range" id="intensity" min="0" max="100" value="55">
+      </div>
+      <div class="ctl">
+        <label for="volume"><span data-i18n="volume">громкость</span><span id="volVal">70%</span></label>
+        <input type="range" id="volume" min="0" max="100" value="70">
+      </div>
+      <div class="timer" role="group" aria-label="Таймер">
+        <button class="chip active" data-min="0">∞</button>
+        <button class="chip" data-min="15">15</button>
+        <button class="chip" data-min="25">25</button>
+        <button class="chip" data-min="45">45</button>
+        <span class="countdown" id="countdown"></span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+      <button class="chip" id="shuffleBtn" title="Перемешать брейки по трекам" style="font-size:13px;">🔀 перемешать</button>
+      <span style="font-size:12px;color:var(--text2)">каждый трек — свой брейк</span>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <footer id="footer"></footer>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3>
+      <svg class="prop" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
+        <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
+        <circle cx="12" cy="12" r="2.4" fill="var(--text)"/>
+      </svg>
+      Addiction.fm
+    </h3>
+    <p data-i18n="aboutText"></p>
+    <p><a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a></p>
+    <button class="chip closebtn" id="closeAbout" data-i18n="close">Закрыть</button>
+    <p class="credit" data-i18n="aboutCredit">ПОЖАЛУЙСТА, ЕСЛИ ВЫ ИСПОЛЬЗУЕТЕ ЭТОТ КОД, УКАЖИТЕ СОЗДАТЕЛЯ</p>
+  </div>
+</div>
+
+<script src="breaks.js"></script>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+/* ================= config / i18n ================= */
+const CFG_KEY = "addictionfm";
+let cfg = {};
+try { cfg = JSON.parse(localStorage.getItem(CFG_KEY) || "{}"); } catch(e){}
+function saveCfg(){
+  try {
+    localStorage.setItem(CFG_KEY, JSON.stringify({
+      lang, dark, vol: state.volume, int: state.intensity
+    }));
+  } catch(e){}
+}
+
+const I18N = {
+  ru: {
+    tagline:"генеративное радио",
+    heroTitle:"Одна кнопка — и звук создаётся под ваше состояние.",
+    heroText:"Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, рекомендаций и выбора треков.",
+    drive:"РАЗГОН", driveGenre:"амен-брейк · джангл · ~180 BPM",
+    driveDesc:"Быстрые нарезанные брейки и мягкое пианино.",
+    focus:"ФОКУС", focusGenre:"глубокий эмбиент",
+    focusDesc:"Только глубокий басс и тёмные пэды — никаких ударных, идеально для работы.",
+    calm:"ПОКОЙ", calmGenre:"дрон · дождь · мягкие колокольчики",
+    calmDesc:"Медленный гул, шум дождя и приглушённые колокольчики — идеально для расслабления.",
+    selected:"● выбрано", ready:"готов к запуску", playing:"играет", paused:"на паузе",
+    track:"трек", intensity:"интенсивность", volume:"громкость",
+    menuLang:"Язык", menuAbout:"ℹ О приложении", close:"Закрыть",
+    aboutCredit:"ПОЖАЛУЙСТА, ЕСЛИ ВЫ ИСПОЛЬЗУЕТЕ ЭТОТ КОД, УКАЖИТЕ СОЗДАТЕЛЯ",
+    aboutText:"Генеративное радио для мозга: три состояния, бесконечный неповторяющийся звук, синтез в реальном времени через Web Audio API. Наследник AddictionTune — без стриминга и зависимостей.",
+    hint:"<kbd>Space</kbd> — пауза · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> — состояние · <kbd>V</kbd> — трек назад · <kbd>B</kbd> — трек вперёд · по окончанию таймера звук плавно гаснет",
+    footer:'<a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a>'
+  },
+  en: {
+    tagline:"generative radio",
+    heroTitle:"One button — and the sound is created for your state.",
+    heroText:"Nothing is streamed or downloaded: the sound is synthesized right in your browser and never repeats. No accounts, no recommendations, no track picking.",
+    drive:"DRIVE", driveGenre:"amen break · jungle · ~180 BPM",
+    driveDesc:"Fast chopped breaks and dark sub bass — fury and tenderness at once.",
+    focus:"FOCUS", focusGenre:"deep ambient",
+    focusDesc:"Just deep sub bass and dark pads — no drums, perfect for work.",
+    calm:"CALM", calmGenre:"drone · rain · soft bells",
+    calmDesc:"Slow hum, rain noise and muffled bells — like a gentle touch.",
+    selected:"● selected", ready:"ready to play", playing:"playing", paused:"paused",
+    track:"track", intensity:"intensity", volume:"volume",
+    menuLang:"Language", menuAbout:"ℹ About", close:"Close",
+    aboutCredit:"PLEASE CREDIT THE CREATOR IF YOU USE THIS CODE",
+    aboutText:"Generative radio for your brain: three states, endless non-repeating sound, synthesized in real time with the Web Audio API. A descendant of AddictionTune — no streaming, no dependencies.",
+    hint:"<kbd>Space</kbd> — pause · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> — state · <kbd>V</kbd> — previous track · <kbd>B</kbd> — next track · sound fades out when the timer ends",
+    footer:'<a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a>'
+  },
+  es: {
+    tagline:"radio generativa",
+    heroTitle:"Un botón — y el sonido se crea para tu estado.",
+    heroText:"Nada se transmite ni se descarga: el sonido se sintetiza directamente en tu navegador y nunca se repite. Sin cuentas, sin recomendaciones, sin elegir pistas.",
+    drive:"IMPULSO", driveGenre:"amen break · jungle · ~180 BPM",
+    driveDesc:"Breaks rápidos y troceados con un sub oscuro — furia y ternura a la vez.",
+    focus:"ENFOQUE", focusGenre:"ambient profundo",
+    focusDesc:"Solo sub profundo y pads oscuros — sin percusión, ideal para trabajar.",
+    calm:"CALMA", calmGenre:"drone · lluvia · campanas suaves",
+    calmDesc:"Zumbido lento, ruido de lluvia y campanas amortiguadas — como una caricia suave.",
+    selected:"● elegido", ready:"listo para reproducir", playing:"sonando", paused:"en pausa",
+    track:"pista", intensity:"intensidad", volume:"volumen",
+    menuLang:"Idioma", menuAbout:"ℹ Acerca de", close:"Cerrar",
+    aboutCredit:"POR FAVOR, ACREDITA AL CREADOR SI USAS ESTE CÓDIGO",
+    aboutText:"Radio generativa para tu cerebro: tres estados, sonido infinito que nunca se repite, sintetizado en tiempo real con Web Audio API. Descendiente de AddictionTune — sin streaming ni dependencias.",
+    hint:"<kbd>Space</kbd> — pausa · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> — estado · <kbd>V</kbd> — pista anterior · <kbd>B</kbd> — pista siguiente · el sonido se desvanece al acabar el temporizador",
+    footer:'<a href="https://github.com/Ponosus" target="_blank" rel="noopener">GitHub</a> · <a href="https://t.me/VestronVulture" target="_blank" rel="noopener">Telegram</a>'
+  }
+};
+
+let lang = I18N[cfg.lang] ? cfg.lang : "ru";
+function L(key){ return I18N[lang][key] || I18N.ru[key] || key; }
+function applyLang(){
+  document.documentElement.lang = lang;
+  $$("[data-i18n]").forEach(el => { el.textContent = L(el.dataset.i18n); });
+  $("#hint").innerHTML = L("hint");
+  $("#footer").innerHTML = L("footer");
+  $$(".chip.lang").forEach(c => c.classList.toggle("active", c.dataset.lang === lang));
+  updateNow();
+}
+
+/* ================= state ================= */
+const state = {
+  mood:"focus", playing:false,
+  intensity: typeof cfg.int === "number" ? cfg.int : .55,
+  volume: typeof cfg.vol === "number" ? cfg.vol : .7,
+  timerMin:0, timerEnd:null
+};
+const COLORS = { drive:"#E56458", focus:"#2783DE", calm:"#46A171" };
+const COLORS_DARK = { drive:"#E97366", focus:"#5E9FE8", calm:"#72BC8F" };
+
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let dark = typeof cfg.dark === "boolean" ? cfg.dark : prefersDark;
+
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  $("#themeBtn").textContent = dark ? "☀" : "🌙";
+}
+$("#themeBtn").addEventListener("click", () => { dark = !dark; applyTheme(); saveCfg(); });
+
+function moodColor(){ return (dark ? COLORS_DARK : COLORS)[state.mood]; }
+
+/* ================= tracks =================
+   трек — детерминированная вариация: один и тот же номер всегда даёт
+   одну и ту же тональность/прогрессию/ритм — можно мотать туда-сюда */
+/* каждый пресет хранит свой номер трека */
+const trackNos = { drive: 1, focus: 1, calm: 1 };
+let trackNo = 1;
+let variation = { n:1, transpose:0, prog:0, pat:0, bassline:0, arpStyle:0, tempoJit:0 };
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function trackParams(n){
+  const r = mulberry32(n * 747796405 + 2891336453);
+  return {
+    n,
+    transpose: Math.floor(r() * 12) - 6,
+    prog: Math.floor(r() * PROGS.length),
+    pat: Math.floor(r() * DRIVE_PATTERNS.length),
+    bassline: Math.floor(r() * DRIVE_BASSLINES.length),
+    arpStyle: Math.floor(r() * ARPS.length),
+    tempoJit: Math.floor(r() * 9) - 4
+  };
+}
+function tf(f){ return f * Math.pow(2, variation.transpose / 12); }
+
+function updateNow(){
+  $("#nowTitle").textContent = L(state.mood);
+  $("#nowSub").textContent = state.playing
+    ? L("playing") + " · " + L("track") + " #" + trackNo
+    : (wasStarted ? L("paused") : L("ready"));
+}
+
+/* ================= ui ================= */
+let wasStarted = false;
+function setMood(m, autoplay){
+  /* сохраняем текущий трек пресета, восстанавливаем для нового */
+  trackNos[state.mood] = trackNo;
+  state.mood = m;
+  trackNo = trackNos[m];
+  variation = trackParams(trackNo);
+  $("#trackNo").textContent = "#" + trackNo;
+  $$(".mood").forEach(c => c.classList.toggle("active", c.dataset.m === m));
+  if (state.playing || autoplay) start(); else updateNow();
+}
+$$(".mood").forEach(c => c.addEventListener("click", () => setMood(c.dataset.m, true)));
+
+function uiPlaying(on){
+  state.playing = on;
+  document.body.classList.toggle("playing", on);
+  $("#playIcon").innerHTML = on
+    ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
+  updateNow();
+}
+
+/* ================= audio engine ================= */
+let ctx = null, master = null, analyser = null, session = null;
+
+function ensureCtx(){
+  if (!ctx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = Math.pow(state.volume, 1.5);
+    const comp = ctx.createDynamicsCompressor();
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.8;
+    master.connect(comp); comp.connect(analyser); analyser.connect(ctx.destination);
+    /* нода для захвата потока (запись) */
+    const recDest = ctx.createMediaStreamDestination();
+    analyser.connect(recDest);
+    ctx._recDest = recDest;
+  }
+  if (ctx.state === "suspended") ctx.resume();
+}
+
+/* ---- банк настоящих брейков из breaks.js (декодируем лениво по одному).
+   Если breaks.js не подключён — разгон работает на синтезе-фолбэке ---- */
+const breakBank = {};
+/* порядок брейков: breakOrder[trackIdx % n] → индекс в BREAKS[]
+   перемешивается кнопкой «Перемешать» — новый трек → новый брейк */
+let breakOrder = null;
+function ensureBreakOrder(){
+  if (!window.BREAKS || !window.BREAKS.length) return;
+  if (breakOrder && breakOrder.length === window.BREAKS.length) return;
+  breakOrder = window.BREAKS.map((_, i) => i);
+}
+function shuffleBreaks(){
+  ensureBreakOrder();
+  if (!breakOrder) return;
+  for (let i = breakOrder.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [breakOrder[i], breakOrder[j]] = [breakOrder[j], breakOrder[i]];
+  }
+  if (state.playing) start(); /* перезапуск с новым порядком */
+  const btn = $("#shuffleBtn");
+  btn.textContent = "✔ перемешано";
+  setTimeout(() => { btn.innerHTML = "🔀 перемешать"; }, 1500);
+}
+function getBreak(idx, cb){
+  if (!window.BREAKS || !window.BREAKS.length) return;
+  ensureBreakOrder();
+  const n = window.BREAKS.length;
+  const mapped = breakOrder ? breakOrder[((idx % n) + n) % n] : ((idx % n) + n) % n;
+  if (breakBank[mapped]){ cb(breakBank[mapped]); return; }
+  const meta = window.BREAKS[mapped];
+  const bin = atob(meta.b64), arr = new Uint8Array(bin.length);
+  for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
+  ctx.decodeAudioData(arr.buffer, buf => {
+    breakBank[mapped] = { name: meta.name, bpm: meta.bpm, bars: meta.bars, buf };
+    cb(breakBank[mapped]);
+  }, () => {});
+}
+
+function rnd(a, b){ return a + Math.random() * (b - a); }
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+let whiteBuf = null, pinkBuf = null;
+function noiseBuffers(){
+  if (whiteBuf) return;
+  const len = ctx.sampleRate * 2;
+  whiteBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const w = whiteBuf.getChannelData(0);
+  for (let i = 0; i < len; i++) w[i] = Math.random() * 2 - 1;
+  pinkBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const p = pinkBuf.getChannelData(0);
+  let b0=0,b1=0,b2=0;
+  for (let i = 0; i < len; i++){
+    const wh = Math.random() * 2 - 1;
+    b0 = 0.997 * b0 + 0.029591 * wh;
+    b1 = 0.985 * b1 + 0.032534 * wh;
+    b2 = 0.950 * b2 + 0.048056 * wh;
+    p[i] = (b0 + b1 + b2 + wh * 0.05) * 3.5;
+  }
+}
+
+function stopSession(fade){
+  if (!session) return;
+  const s = session; session = null;
+  s.timeouts.forEach(clearTimeout);
+  clearTimeout(s.tid);
+  const t = ctx.currentTime;
+  s.bus.gain.cancelScheduledValues(t);
+  s.bus.gain.setValueAtTime(s.bus.gain.value, t);
+  s.bus.gain.linearRampToValueAtTime(0.0001, t + fade);
+  setTimeout(() => {
+    s.stops.forEach(f => { try { f(); } catch(e){} });
+    try { s.bus.disconnect(); } catch(e){}
+  }, fade * 1000 + 150);
+}
+
+function start(){
+  ensureCtx(); noiseBuffers();
+  stopSession(0.4);
+  const bus = ctx.createGain();
+  bus.gain.value = 0.0001;
+  bus.gain.linearRampToValueAtTime(1, ctx.currentTime + 1.2);
+  bus.connect(master);
+  session = { bus, stops: [], timeouts: [], mood: state.mood };
+  BUILD[state.mood](session);
+  wasStarted = true;
+  uiPlaying(true);
+  armTimer();
+}
+function stop(){ stopSession(0.8); uiPlaying(false); }
+
+/* ---- one-shot sounds (dest = node to connect to) ---- */
+function kick(dest, t, v){
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.frequency.setValueAtTime(150, t);
+  o.frequency.exponentialRampToValueAtTime(44, t + 0.12);
+  g.gain.setValueAtTime(v, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+  o.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.3);
+}
+function hat(dest, t, v, open){
+  const src = ctx.createBufferSource(); src.buffer = whiteBuf;
+  const f = ctx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 7500;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(v, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + (open ? 0.25 : 0.045));
+  src.connect(f); f.connect(g); g.connect(dest);
+  src.start(t); src.stop(t + 0.3);
+}
+function snare(dest, t, v){
+  const src = ctx.createBufferSource(); src.buffer = whiteBuf;
+  src.playbackRate.value = rnd(0.92, 1.08); /* живость брейков */
+  const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = 0.8;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(v, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+  src.connect(f); f.connect(g); g.connect(dest);
+  src.start(t); src.stop(t + 0.2);
+  const o = ctx.createOscillator(), g2 = ctx.createGain();
+  o.frequency.value = 190;
+  g2.gain.setValueAtTime(v * 0.5, t);
+  g2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  o.connect(g2); g2.connect(dest); o.start(t); o.stop(t + 0.1);
+}
+function sub(dest, t, freq, dur, v){
+  const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = freq;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(v, t + 0.03);
+  g.gain.setValueAtTime(v, t + dur * 0.6);
+  g.gain.linearRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + 0.05);
+}
+function stab(dest, t, freqs, v){
+  freqs.forEach(fr => {
+    [-8, 8].forEach(det => {
+      const o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = fr; o.detune.value = det;
+      const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 900; f.Q.value = 0.7;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(v / freqs.length, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      o.connect(f); f.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.25);
+    });
+  });
+}
+function pluck(dest, t, freq, v){
+  const o = ctx.createOscillator(); o.type = "triangle"; o.frequency.value = freq;
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1600;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(v, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+  o.connect(f); f.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.55);
+}
+/* тёплое «пианино» — мягкий удар, энергия в низкой середине, как у hkmori */
+function piano(dest, t, freqs, v){
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1900; f.Q.value = 0.4;
+  f.connect(dest);
+  freqs.forEach(fr => {
+    [["triangle", 1, 1], ["sine", 2, 0.35], ["sine", 0.5, 0.3]].forEach(([type, m, vol]) => {
+      const o = ctx.createOscillator(); o.type = type; o.frequency.value = fr * m;
+      o.detune.value = rnd(-4, 4);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(v * vol / freqs.length, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0006, t + 1.6);
+      o.connect(g); g.connect(f); o.start(t); o.stop(t + 1.7);
+    });
+  });
+}
+/* приглушённый колокольчик — мягкая атака, низкий фильтр, долгое затухание */
+function bellSoft(dest, t, freq, v){
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 800; f.Q.value = 0.5;
+  f.connect(dest);
+  [[1, v], [2, v * 0.18]].forEach(([m, vol]) => {
+    const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = freq * m;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.06);
+    g.gain.exponentialRampToValueAtTime(0.0004, t + 4);
+    o.connect(g); g.connect(f); o.start(t); o.stop(t + 4.2);
+  });
+}
+/* ---- sustained layers ---- */
+function pad(s, freqs, level, attack, baseCutoff){
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(level, ctx.currentTime + attack);
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = baseCutoff || 800;
+  const lfo = ctx.createOscillator(); lfo.frequency.value = 0.06;
+  const lfoG = ctx.createGain(); lfoG.gain.value = (baseCutoff || 800) * 0.4;
+  lfo.connect(lfoG); lfoG.connect(f.frequency); lfo.start();
+  f.connect(g); g.connect(s.bus);
+  const oscs = [];
+  freqs.forEach(fr => {
+    [-6, 6].forEach(det => {
+      const o = ctx.createOscillator(); o.type = "sawtooth";
+      o.frequency.value = fr; o.detune.value = det;
+      o.connect(f); o.start(); oscs.push(o);
+    });
+  });
+  const stopFn = (release) => {
+    const t = ctx.currentTime;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(0.0001, t + (release || 0.1));
+    setTimeout(() => { oscs.forEach(o => { try { o.stop(); } catch(e){} }); try { lfo.stop(); } catch(e){} }, (release || 0.1) * 1000 + 100);
+  };
+  s.stops.push(() => stopFn(0.1));
+  return stopFn;
+}
+function rain(s, level, cutoff){
+  const src = ctx.createBufferSource(); src.buffer = pinkBuf; src.loop = true;
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = cutoff || 1000;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(level, ctx.currentTime + 3);
+  src.connect(f); f.connect(g); g.connect(s.bus); src.start();
+  s.stops.push(() => { try { src.stop(); } catch(e){} });
+  s.rainGain = g;
+}
+function drone(s, freq, type, level, detune){
+  const o = ctx.createOscillator(); o.type = type; o.frequency.value = freq; o.detune.value = detune || 0;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(level, ctx.currentTime + 4);
+  o.connect(g); g.connect(s.bus); o.start();
+  s.stops.push(() => { try { o.stop(); } catch(e){} });
+}
+/* шина барабанов с общим фи��ьтром — для «приглушённости» */
+/* кусок настоящего брейка: startStep/steps — в шестнадцатых его родного темпа */
+function breakSlice(dest, bb, t, startStep, steps, v){
+  const stepDur = 60 / bb.bpm / 4;
+  const total = bb.bars * 16;
+  const src = ctx.createBufferSource(); src.buffer = bb.buf;
+  const g = ctx.createGain(); g.gain.value = v;
+  src.connect(g); g.connect(dest);
+  src.start(t, (startStep % total) * stepDur, steps * stepDur);
+}
+function drumBus(s, cutoff){
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = cutoff;
+  f.connect(s.bus);
+  s.drumFilter = f;
+  return f;
+}
+function schedule(s, stepFn, stepDurFn){
+  let step = 0, next = ctx.currentTime + 0.1;
+  const tick = () => {
+    if (session !== s) return;
+    while (next < ctx.currentTime + 0.25){
+      stepFn(step, next);
+      next += stepDurFn();
+      step++;
+    }
+    s.tid = setTimeout(tick, 60);
+  };
+  tick();
+}
+
+/* ================= musical material ================= */
+/* аккорды: [бас, голоса...] в ля-минорном мире, транспонируются вариацией */
+const Am=[110,220,261.63,329.63], F=[87.31,174.61,261.63,349.23], C=[130.81,261.63,329.63,392],
+      G=[98,196,246.94,293.66], Em=[82.41,164.81,246.94,329.63], Dm=[73.42,146.83,220,293.66],
+      Am9=[110,220,246.94,329.63], Fmaj7=[87.31,174.61,220,261.63], E7=[82.41,164.81,207.65,246.94],
+      Dm7=[73.42,146.83,220,261.63];
+const PROGS = [
+  [Am,F,C,G], [Am,Em,F,G], [Dm,Am,Em,F], [Am,Fmaj7,Dm,E7],
+  [Am9,C,G,Fmaj7], [Dm7,G,C,Am], [F,G,Am,Am9], [Am,C,Fmaj7,Em]
+];
+const ARPS = [
+  [220,261.63,293.66,329.63,392,440],
+  [220,246.94,329.63,392,440,523.25],
+  [220,261.63,329.63,440,523.25,659.25],
+  [174.61,220,261.63,349.23,440,523.25]
+];
+const DRIVE_BASSLINES = [
+  [55,55,49,61.74], [55,65.41,55,49], [61.74,55,73.42,55],
+  [55,49,55,65.41], [41.2,55,61.74,49]
+];
+const DRIVE_PATTERNS = [
+  { k:[0,10],   s:[4,12] },
+  { k:[0,6,10], s:[4,12] },
+  { k:[0,3,10], s:[4,12] },
+  { k:[0,7],    s:[4,12,14] },
+  { k:[0,5,8],  s:[4,11] },
+  { k:[0,10,13],s:[4,12] }
+];
+/* амен-брейк: 2 такта по 16 шестнадцатых — k кики, s снейры, g госты.
+   Фирменная синкопа — снейр на 14-м шаге второго такта */
+const AMEN = [
+  { k:[0,2],    s:[4,12], g:[7,9] },
+  { k:[0,2,10], s:[4,14], g:[7,9] }
+];
+const STABS = [ [220,261.63,329.63], [174.61,220,261.63], [196,246.94,293.66] ];
+const CALM_BELLS = [329.63,392,440,523.25,587.33];
+
+/* ================= moods ================= */
+const BUILD = {
+  /* ФОКУС — глубокий эмбиент без ударных: только длинный саб-бас
+     (как у mutant standard — 81% энергии в низах), тёмные низкие пэды
+     и редкие тихие отклики в середине спектра */
+  focus(s){
+    const prog = PROGS[variation.prog];
+    const bass = DRIVE_BASSLINES[variation.bassline];
+    let chordIdx = 0, padStop = pad(s, prog[0].slice(1).map(f => tf(f) / 2), 0.055, 4, 420);
+    const swap = () => {
+      if (session !== s) return;
+      padStop(5);
+      chordIdx = (chordIdx + 1) % prog.length;
+      padStop = pad(s, prog[chordIdx].slice(1).map(f => tf(f) / 2), 0.055, 5, 420);
+      s.timeouts.push(setTimeout(swap, 17000));
+    };
+    s.timeouts.push(setTimeout(swap, 17000));
+    let bar = 0;
+    /* медленная сетка: только бас и редкие отклики, никаких ударных */
+    schedule(s, (step, t) => {
+      const inten = state.intensity;
+      const i16 = step % 16;
+      if (i16 === 0) bar++;
+      /* саб — главный голос: длинные ноты басовой линии */
+      if (i16 % 8 === 0) sub(s.bus, t, tf(bass[(i16 / 8 + bar) % bass.length]), 2.2, 0.3);
+      if (i16 === 12 && Math.random() < 0.3 + inten * 0.4)
+        sub(s.bus, t, tf(bass[bar % bass.length]) * 1.5, 0.8, 0.12);
+      /* редкий тёмный отклик в середине спектра */
+      if (i16 === 4 && Math.random() < 0.2 + inten * 0.25)
+        pluck(s.bus, t, tf(prog[chordIdx][1]), 0.045 + inten * 0.03);
+      if (i16 === 10 && Math.random() < 0.12 + inten * 0.15)
+        pluck(s.bus, t, tf(prog[chordIdx][2] || prog[chordIdx][1]) / 2, 0.04);
+    }, () => 60 / (120 + state.intensity * 20 + variation.tempoJit * 3) / 2);
+  },
+
+  /* РАЗГОН — амен-брейк (как в Mr. Kill Myself): классическая двухтактовая
+     петля с гост-снейрами и синкопой, статтеры 32-ми, жирный саб
+     (~70% энергии оригинала в низах), едва слышное пианино */
+  drive(s){
+    const prog = PROGS[variation.prog];
+    const arpScale = ARPS[variation.arpStyle];
+    const drums = drumBus(s, 5000 + state.intensity * 3500);
+    pad(s, prog[0].slice(1).map(tf), 0.014, 7, 750);
+    /* настоящий брейк из breaks.js — у каждого трека свой */
+    getBreak(variation.n - 1, bb => { if (session === s) s.breakBuf = bb; });
+    let note = 3;
+    schedule(s, (step, t) => {
+      const inten = state.intensity;
+      const i16 = step % 16, bar = Math.floor(step / 16);
+      const chord = prog[Math.floor(bar / 2) % prog.length];
+      const p = AMEN[bar % 2];
+      const sd = 60 / (176 + inten * 12 + variation.tempoJit * 2) / 4;
+      const fill = bar % 4 === 3 && i16 >= 12;
+      if (s.breakBuf){
+        /* музыкальная нарезка: брейк идёт линейно по тактам,
+           но с редкими DJ-эдитами — повтор или случайный прыжок */
+        const bb = s.breakBuf;
+        const totalSteps = bb.bars * 16;
+        /* текущая позиция в брейке — линейно шагаем по 16-шаговой сетке потактово */
+        if (!s.breakPos) s.breakPos = 0;
+        let pos = s.breakPos;
+        let sliceLen = 16; /* по умолчанию — целый такт */
+        if (i16 === 0){
+          /* на сильной доле: переходим к следующему такту брейка */
+          /* редкий DJ-эффект: иногда прыгаем на другой такт брейка */
+          const jump = Math.random() < 0.18 + inten * 0.12;
+          if (jump){
+            pos = Math.floor(Math.random() * bb.bars) * 16;
+          } else {
+            pos = (pos + 16) % totalSteps;
+          }
+          s.breakPos = pos;
+          breakSlice(drums, bb, t, pos, 16, 0.52 + inten * 0.18);
+        } else if (fill){
+          /* ролл-филл: повторяем одну 16-ю часть такта */
+          const rollStep = pos + (i16 % 4) * 2;
+          breakSlice(drums, bb, t, rollStep % totalSteps, 2, 0.45);
+        } else if (Math.random() < 0.07 + inten * 0.08){
+          /* редкий статтер: повторяем прошлый 1-2-шаговый кусок */
+          const stutLen = Math.random() < 0.5 ? 1 : 2;
+          const stutPos = (pos + Math.floor(Math.random() * 8)) % totalSteps;
+          breakSlice(drums, bb, t, stutPos, stutLen, 0.38 + inten * 0.15);
+        }
+      } else {
+        /* фолбэк: синтезированный амен, если breaks.js не подключён */
+        if (fill){
+          snare(drums, t, 0.09 + (i16 - 12) * 0.045);
+        } else {
+          if (p.k.includes(i16)) kick(drums, t, 0.42);
+          if (p.s.includes(i16)) snare(drums, t, 0.26);
+          if (p.g.includes(i16)) snare(drums, t, 0.1);
+          if ((p.s.includes(i16) || p.g.includes(i16)) && Math.random() < 0.08 + inten * 0.22)
+            snare(drums, t + sd / 2, 0.12);
+        }
+        if (i16 % 2 === 0) hat(drums, t, i16 % 4 === 2 ? 0.09 : 0.05, false);
+      }
+      if (i16 === 0){
+        sub(s.bus, t, tf(chord[0]) / 2, 1.5, 0.14);
+        /* грустный аккорд «пианино» на каждый такт */
+        piano(s.bus, t, chord.slice(1).map(tf), 0.13 + inten * 0.05);
+      }
+      if (i16 % 4 === 2 && Math.random() < 0.25 + inten * 0.45){
+        note = Math.max(0, Math.min(arpScale.length - 1, note + (Math.random() < 0.5 ? -1 : 1)));
+        pluck(s.bus, t, tf(arpScale[note]) * 2, 0.04 + inten * 0.03);
+      }
+    }, () => 60 / (s.breakBuf ? s.breakBuf.bpm : 176 + state.intensity * 12 + variation.tempoJit * 2) / 4);
+  },
+
+  /* ПОКОЙ — дрон, тихий дождь и мелодия приглушённых колокольчиков:
+     колокольчики теперь ведут, а не тонут в шуме */
+  calm(s){
+    const prog = PROGS[variation.prog];
+    drone(s, tf(110), "sine", 0.06, 0);
+    drone(s, tf(110), "triangle", 0.035, 7);
+    drone(s, tf(164.81), "sine", 0.04, -5);
+    pad(s, prog[0].slice(1).map(tf), 0.032, 8, 700);
+    rain(s, 0.02 + state.intensity * 0.055, 850);
+    let bi = variation.arpStyle % CALM_BELLS.length;
+    const ring = () => {
+      if (session !== s) return;
+      /* шаг по шкале — неспешная мелодия, а не случайный звон */
+      bi = Math.max(0, Math.min(CALM_BELLS.length - 1, bi + (Math.random() < 0.5 ? -1 : 1)));
+      const base = tf(CALM_BELLS[bi]);
+      bellSoft(s.bus, ctx.currentTime + 0.05, base, 0.1 + state.intensity * 0.06);
+      if (Math.random() < 0.45)
+        bellSoft(s.bus, ctx.currentTime + rnd(0.5, 1.1), base * 1.5, 0.05);
+      if (Math.random() < 0.25)
+        bellSoft(s.bus, ctx.currentTime + rnd(1.2, 1.8), base * 2, 0.03);
+      s.timeouts.push(setTimeout(ring, rnd(2800, 8000 - state.intensity * 4200)));
+    };
+    s.timeouts.push(setTimeout(ring, 1200));
+  }
+};
+
+/* ================= controls ================= */
+$("#playBtn").addEventListener("click", () => { state.playing ? stop() : start(); });
+function setTrack(n){
+  trackNo = Math.max(1, n);
+  trackNos[state.mood] = trackNo;
+  variation = trackParams(trackNo);
+  $("#trackNo").textContent = "#" + trackNo;
+  if (state.playing) start(); else updateNow();
+}
+$("#nextBtn").addEventListener("click", () => setTrack(trackNo + 1));
+$("#prevBtn").addEventListener("click", () => setTrack(trackNo - 1));
+$("#shuffleBtn").addEventListener("click", shuffleBreaks);
+setTrack(trackNo);
+
+/* ---- запись трека ---- */
+let recRecorder = null, recChunks = [];
+$("#recBtn").addEventListener("click", () => {
+  const btn = $("#recBtn");
+  if (recRecorder && recRecorder.state === "recording"){
+    recRecorder.stop();
+    return;
+  }
+  ensureCtx();
+  if (!state.playing) start();
+  const stream = ctx._recDest.stream;
+  const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+    ? "audio/webm;codecs=opus" : "audio/ogg;codecs=opus";
+  recRecorder = new MediaRecorder(stream, { mimeType: mime });
+  recChunks = [];
+  recRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  recRecorder.onstop = () => {
+    const blob = new Blob(recChunks, { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const ext = mime.includes("webm") ? "webm" : "ogg";
+    const mood = state.mood, n = trackNo;
+    a.download = `addiction-fm_${mood}_track${n}.${ext}`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    btn.className = "recbtn done";
+    btn.textContent = "✓ сохранено";
+    setTimeout(() => { btn.className = "recbtn"; btn.innerHTML = "⏺ rec"; }, 3000);
+  };
+  recRecorder.start(1000);
+  btn.className = "recbtn recording";
+  btn.innerHTML = "⏹ стоп";
+});
+
+const intEl = $("#intensity"), volEl = $("#volume");
+intEl.value = Math.round(state.intensity * 100);
+volEl.value = Math.round(state.volume * 100);
+$("#intVal").textContent = intEl.value + "%";
+$("#volVal").textContent = volEl.value + "%";
+intEl.addEventListener("input", e => {
+  state.intensity = e.target.value / 100;
+  $("#intVal").textContent = e.target.value + "%";
+  if (session && session.rainGain && session.mood === "calm")
+    session.rainGain.gain.setTargetAtTime(0.05 + state.intensity * 0.12, ctx.currentTime, 0.3);
+  saveCfg();
+});
+volEl.addEventListener("input", e => {
+  state.volume = e.target.value / 100;
+  $("#volVal").textContent = e.target.value + "%";
+  if (master) master.gain.setTargetAtTime(Math.pow(state.volume, 1.5), ctx.currentTime, 0.05);
+  saveCfg();
+});
+
+/* timer */
+$$(".chip[data-min]").forEach(ch =>
+  ch.addEventListener("click", () => {
+    $$(".chip[data-min]").forEach(c => c.classList.remove("active"));
+    ch.classList.add("active");
+    state.timerMin = +ch.dataset.min;
+    armTimer();
+  }));
+function armTimer(){
+  state.timerEnd = (state.playing && state.timerMin > 0) ? Date.now() + state.timerMin * 60000 : null;
+  if (!state.timerEnd) $("#countdown").textContent = "";
+}
+setInterval(() => {
+  if (!state.timerEnd) return;
+  const left = state.timerEnd - Date.now();
+  if (left <= 0){
+    state.timerEnd = null;
+    $("#countdown").textContent = "";
+    if (session) bellSoft(master, ctx.currentTime + 0.1, 659.25, 0.08);
+    stopSession(6);
+    uiPlaying(false);
+    return;
+  }
+  const m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
+  $("#countdown").textContent = m + ":" + String(sec).padStart(2, "0");
+}, 500);
+
+/* keyboard */
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.code === "Space"){ e.preventDefault(); state.playing ? stop() : start(); }
+  if (e.key === "1") setMood("drive", true);
+  if (e.key === "2") setMood("focus", true);
+  if (e.key === "3") setMood("calm", true);
+  if (e.key === "v" || e.key === "V" || e.key === "м" || e.key === "М") setTrack(trackNo - 1);
+  if (e.key === "b" || e.key === "B" || e.key === "и" || e.key === "И") setTrack(trackNo + 1);
+  if (e.key === "Escape"){ $("#overlay").hidden = true; $("#menu").hidden = true; }
+});
+
+/* settings menu + about */
+const menu = $("#menu"), overlay = $("#overlay");
+$("#settingsBtn").addEventListener("click", e => {
+  e.stopPropagation();
+  menu.hidden = !menu.hidden;
+});
+document.addEventListener("click", e => {
+  if (!menu.hidden && !menu.contains(e.target) && e.target !== $("#settingsBtn")) menu.hidden = true;
+});
+$$(".chip.lang").forEach(c =>
+  c.addEventListener("click", () => { lang = c.dataset.lang; applyLang(); saveCfg(); }));
+$("#aboutBtn").addEventListener("click", () => { menu.hidden = true; overlay.hidden = false; });
+$("#closeAbout").addEventListener("click", () => { overlay.hidden = true; });
+overlay.addEventListener("click", e => { if (e.target === overlay) overlay.hidden = true; });
+
+/* ================= viz ================= */
+const viz = $("#viz"), vctx = viz.getContext("2d");
+/* ретина-подчёт: рисуем на физически большем канвасе, отображаем через CSS меньше */
+const DPR = Math.min(window.devicePixelRatio || 1, 3);
+viz.width  = Math.round(viz.offsetWidth  || 200) * DPR;
+viz.height = Math.round(viz.offsetHeight || 34)  * DPR;
+vctx.scale(DPR, DPR);
+const VW = viz.width / DPR, VH = viz.height / DPR;
+/* плавное сглаживание полос */
+const BAR_COUNT = 40;
+const vizSmooth = new Float32Array(BAR_COUNT);
+/* логарифмическая шкала бинов: каждый бар покрывает свой диапазон частот */
+function logBinRange(i, total, nyquist){
+  const lo = nyquist * Math.pow(i / total,       2.2);
+  const hi = nyquist * Math.pow((i + 1) / total, 2.2);
+  return [lo, hi];
+}
+function drawViz(){
+  requestAnimationFrame(drawViz);
+  vctx.clearRect(0, 0, VW, VH);
+  const gap = 2, bw = (VW - gap * (BAR_COUNT - 1)) / BAR_COUNT;
+  const color = moodColor();
+  const isPlaying = analyser && state.playing && !reducedMotion;
+  let freqData = null;
+  if (isPlaying){
+    freqData = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freqData);
+  }
+  const nyquist = (ctx ? ctx.sampleRate : 44100) / 2;
+  const binCount = freqData ? freqData.length : 1;
+  for (let i = 0; i < BAR_COUNT; i++){
+    let val = 0;
+    if (freqData){
+      const [lo, hi] = logBinRange(i, BAR_COUNT, nyquist);
+      const b0 = Math.floor(lo / nyquist * binCount);
+      const b1 = Math.max(b0 + 1, Math.ceil(hi / nyquist * binCount));
+      let sum = 0, cnt = 0;
+      for (let b = b0; b < Math.min(b1, binCount); b++){ sum += freqData[b]; cnt++; }
+      val = cnt > 0 ? sum / cnt / 255 : 0;
+    }
+    /* сглаживание: быстрый подъём, медленное падение */
+    vizSmooth[i] = val > vizSmooth[i]
+      ? vizSmooth[i] * 0.4 + val * 0.6
+      : vizSmooth[i] * 0.78 + val * 0.22;
+    const h = Math.max(2, vizSmooth[i] * (VH - 3));
+    const x = i * (bw + gap);
+    /* градиент снизу вверх */
+    const grad = vctx.createLinearGradient(0, VH, 0, VH - h);
+    grad.addColorStop(0, color + "cc");
+    grad.addColorStop(1, color);
+    vctx.globalAlpha = isPlaying ? 1 : 0.28;
+    vctx.fillStyle = grad;
+    vctx.beginPath();
+    vctx.roundRect(x, VH - h, bw, h, [2, 2, 0, 0]);
+    vctx.fill();
+  }
+  vctx.globalAlpha = 1;
+}
+
+/* ================= init ================= */
+applyTheme();
+applyLang();
+drawViz();
+
+/* ================= propeller (smooth spin up / coast down) ================= */
+const propEl = document.querySelector(".prop");
+let propAngle = 0;
+let propVel   = 0;
+const PROP_SPEED = 3.6;
+const PROP_ACC   = 0.07;
+const PROP_DEC   = 0.04;
+(function propLoop(){
+  requestAnimationFrame(propLoop);
+  if (reducedMotion) return;
+  const target = state.playing ? PROP_SPEED : 0;
+  const alpha  = propVel < target ? PROP_ACC : PROP_DEC;
+  propVel += (target - propVel) * alpha;
+  if (propVel < 0.005) propVel = 0;
+  propAngle = (propAngle + propVel) % 360;
+  propEl.style.transform = `rotate(${propAngle}deg)`;
+})();
+
+/* demo states for screenshots: #demo, #demo-<mood>, #demo-menu, #demo-about */
+if (location.hash.startsWith("#demo")){
+  const part = location.hash.slice(6);
+  if (I18N.ru[part] && ["drive","focus","calm"].includes(part)) setMood(part, false);
+  document.body.classList.add("playing");
+  state.playing = true; wasStarted = true;
+  $("#playIcon").innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+  updateNow();
+  state.playing = false;
+  if (part === "menu") menu.hidden = false;
+  if (part === "about") overlay.hidden = false;
+}
+</script>
+</body>
+</html>
