@@ -1,6 +1,6 @@
 # [Addiction.fm](http://addiction.fm/)
 
-**[English Page]([./Readme.md](https://github.com/sewerdev/Addiction.fm))**
+**[English Page]((https://github.com/sewerdev/Addiction.fm))**
 
 <img width="1920" height="941" alt="image" src="https://github.com/user-attachments/assets/d56ffb01-532f-4fb9-a675-38d7550e1f7c" />
 
