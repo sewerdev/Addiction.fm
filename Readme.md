@@ -32,7 +32,6 @@
 - [💡 Why this exists](#-why-this-exists)
 - [🎚 States](#-states)
 - [🔊 How it works](#-how-it-works)
-- [🚀 Run it](#-run-it)
 - [⚡ Shortcuts](#-shortcuts)
 - [📦 Files](#-files)
 - [💪 Why Addiction.fm](#-why-addictionfm)
@@ -133,28 +132,6 @@ Sound is **generated in real time** via the Web Audio API — this is not stream
 
 ---
 
-## 🚀 Run it
-
-**Online** — just open [sewerdev.github.io/Addiction.fm](https://sewerdev.github.io/Addiction.fm/). Nothing to install.
-
-**Offline** — grab the files and serve the folder:
-
-```bash
-git clone https://github.com/sewerdev/Addiction.fm.git
-cd Addiction.fm
-python3 -m http.server 8000     # or: npx serve .
-```
-
-then open `http://localhost:8000`.
-
-> Serving it matters: under `file://` browsers block `localStorage`, so the radio forgets your language, theme and volume between loads. Any static server — or double-clicking `index.html` for a quick listen — works too.
-
-**Requirements:** a modern browser (Chrome 90+, Firefox 88+, Safari 15+). Nothing else — no build step, no dependencies, no backend.
-
-**Deploy:** push to `main` and GitHub Actions publishes the site to GitHub Pages (`.github/workflows/deploy-site.yml`).
-
----
-
 ## ⚡ Shortcuts
 
 | Key | Action |
@@ -247,7 +224,6 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 - [💡 Зачем это существует](#-зачем-это-существует)
 - [🎚 Состояния](#-состояния)
 - [🔊 Как это работает](#-как-это-работает)
-- [🚀 Запуск](#-запуск)
 - [⚡ Горячие клавиши](#-горячие-клавиши)
 - [📦 Файлы](#-файлы)
 - [💪 Преимущества](#-преимущества)
@@ -344,28 +320,6 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 - **РАЗГОН** — брейк из банка на 268 петель нарезается по 16-м долям с DJ-прыжками, статтерами и роллами, мягкое пианино поверх
 - **ФОКУС** — суббасс синтезируется в заданной тональности, тёмные пэды через delay-цепочку
 - **ПОКОЙ** — дрон из расстроенных осцилляторов, фильтрованный шум, медленные колокольчики
-
----
-
-## 🚀 Запуск
-
-**Онлайн** — просто открой [sewerdev.github.io/Addiction.fm](https://sewerdev.github.io/Addiction.fm/). Ставить нечего.
-
-**Офлайн** — скачай файлы и подними любую статику в этой папке:
-
-```bash
-git clone https://github.com/sewerdev/Addiction.fm.git
-cd Addiction.fm
-python3 -m http.server 8000     # или: npx serve .
-```
-
-затем открой `http://localhost:8000`.
-
-> Сервер нужен не из-за причуд: по `file://` браузеры блокируют `localStorage`, и радио забывает язык, тему и громкость между загрузками. Для быстрого послушать хватит и двойного клика по `index.html`.
-
-**Требования:** современный браузер (Chrome 90+, Firefox 88+, Safari 15+). Больше ничего — без сборки, без зависимостей, без бэкенда.
-
-**Деплой:** push в `main`, и GitHub Actions сам публикует сайт на GitHub Pages (`.github/workflows/deploy-site.yml`).
 
 ---
 
