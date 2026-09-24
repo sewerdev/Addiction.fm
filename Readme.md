@@ -19,6 +19,22 @@ Addiction.fm is a browser-based generative audio app with no playlists, no accou
 
 ---
 
+## 🔥 What's new in 2.2
+
+**The player bar stopped moving.** The break name now sits in a fixed-width plate that covers ~90% of the bank, with the full name in a tooltip. The 🎲 button keeps its slot reserved while the dice is switched on, so changing presets no longer nudges the sliders by a pixel, and long labels truncate instead of colliding. The whole row still holds together down to 633 px.
+
+**Background playback got tougher.** The scheduler no longer trusts `document.hidden` - it measures how late its own ticks actually arrive and grows the lookahead to match real throttling. Coming back from a hard freeze ducks the master for half a second instead of firing every queued note at once, and an `AudioContext` state-change handler re-primes the grid when iOS wakes the context without telling anyone.
+
+**The propeller has three speeds now.** DRIVE, FOCUS and CALM spin at their own rate and ease between them instead of snapping to a stop.
+
+**Fixes**
+- The ⏺ rec button no longer sticks on "⏹ stop" after a recording finishes - a local variable was shadowing the translation function, so the label-revert timer never got armed.
+- The last used preset survives a reload; the page used to always come back to FOCUS.
+- Decoded breaks release their base64 source: about a third of the bank's memory is no longer held for nothing.
+- Dead code removed, and the player is now drawn by a single render pass instead of four functions writing the same nodes.
+
+---
+
 ## 🔥 What's new in 2.1
 
 [Addiction.fm is now hosted!](https://sewerdev.github.io/Addiction.fm/)
@@ -56,7 +72,7 @@ The phone player was rebuilt: a sticky panel at the bottom edge, a CSS-grid layo
 ### Small things you can see and hear
 
 - **mp3 codec delay compensation** - decoders leave up to 25 ms of silence at the head of a file, which made the slicing land just barely late. The real start of the loop is now detected from the signal, so hits sit exactly on the grid.
-- **The break name** appears in the player caption and on the second line of the system card.
+- **The break name** heads the player in DRIVE and sits on the second line of the system card.
 - **Custom icon** - the app artwork doubles as the tab favicon, the home-screen icon, and the system player cover.
 - **Bank counter** in the About dialog shows how many breaks are loaded.
 - **FOCUS was rewritten** around pure synthesis - the `genres.js` file from 1.1 is gone.
@@ -100,7 +116,7 @@ Sound is **generated in real time** via the Web Audio API - this is not streamin
 - **268 breaks** - the bank is reshuffled on every visit
 - **Deterministic tracks** - the `‹‹ #N ››` counter locks a specific track by seed number within a session
 - **WAV recording** - the ⏺️ rec button captures the track in real time and downloads it as `.wav`
-- **Propeller** - spins during playback, gradually coasts to a stop on pause
+- **Propeller** - spins at the tempo of the current state, coasts down on pause
 
 ---
 
@@ -108,7 +124,7 @@ Sound is **generated in real time** via the Web Audio API - this is not streamin
 
 | File | What's inside | Required |
 |------|---------------|----------|
-| `addiction-fm.html` | the whole app: engine, interface, artwork | yes |
+| `index.html` | the whole app: engine, interface, artwork | yes |
 | `breaks.js` | base bank, 49 breaks | yes |
 | `breaks2.js` | main pack, 219 breaks | optional, but far more fun |
 | `breaks3.js` | pack top-up | optional |
@@ -124,7 +140,7 @@ Without `breaks2.js` and `breaks3.js` the radio runs on the base bank; without `
 | `Space` | pause |
 | `1` `2` `3` | state |
 | `V` / `B` | previous / next track |
-| `X` | another break |
+| `X` | another break - in DRIVE, with the 🎲 switch on |
 
 ---
 
@@ -170,6 +186,22 @@ Telegram: [@VestronVulture](https://t.me/VestronVulture)
 
 ---
 
+## 🔥 Что нового в 2.2
+
+**Плеер перестал ездить.** Имя брейка живёт в плашке фиксированной ширины - она закрывает ~90% банка, полное имя лежит в подсказке. Когда кубик включён, его слот остаётся занятым, поэтому смена пресета больше не сдвигает ползунки на пиксель, а длинные подписи обрезаются, а не наезжают друг на друга. Ряд целиком держится вплоть до 633 px.
+
+**Фон стал жёстче.** Планировщик больше не верит флагу `document.hidden` - он меряет, насколько реально опаздывают его тики, и растягивает упреждение под фактический троттлинг. Возврат из жёсткой заморозки на полсекунды приглушает мастер вместо того, чтобы выстрелить всеми запланированными нотами разом, а `AudioContext` сам перепланировывает сетку, когда iOS разбудит контекст и никому об этом не скажет.
+
+**У пропеллера три скорости.** РАЗГОН, ФОКУС и ПОКОЙ крутятся каждая в своём темпе и плавно перетекают друг в друга, а не обрываются щелчком.
+
+**Исправления**
+- Кнопка ⏺ rec больше не залипает на «⏹ стоп» после записи - локальная переменная затеняла функцию перевода, из-за чего таймер возврата надписи просто не ставился.
+- Последний выбранный пресет переживает перезагрузку; раньше страница всегда возвращалась на ФОКУС.
+- Расшифрованный брейк освобождает свою base64-строку: примерно треть банка больше не висит в памяти впустую.
+- Мёртвый код убран, а плеер теперь рисуется одним проходом, а не четырьмя функциями, пишущими в одни и те же узлы.
+
+---
+
 ## 🔥 Что нового в 2.1
 
 [Addiction.fm теперь на хосте!](https://sewerdev.github.io/Addiction.fm/)
@@ -207,7 +239,7 @@ Telegram: [@VestronVulture](https://t.me/VestronVulture)
 ### Мелочи, которые слышно и видно
 
 - **Компенсация задержки mp3-кодека** - декодер оставляет в начале файла до 25 мс тишины, из-за чего нарезка едва заметно запаздывала. Теперь реальное начало петли ищется по сигналу, и доли попадают ровно в сетку.
-- **Имя брейка** видно в подписи плеера и во второй строке системной карточки.
+- **Имя брейка** - заголовок плеера в РАЗГОНЕ и вторая строка системной карточки.
 - **Своя иконка** - обложка приложения работает как фавикон вкладки, иконка на домашнем экране и обложка в системном плеере.
 - **Счётчик банка** в окне «О приложении» показывает, сколько брейков подгружено.
 - **ФОКУС переписан** на чистый синтез - файл `genres.js` из версии 1.1 больше не нужен.
@@ -217,7 +249,7 @@ Telegram: [@VestronVulture](https://t.me/VestronVulture)
 ## Зачем это существует
 
 Большинство музыкальных сервисов требуют выбора. Выбор - это отвлечение.
-[Addiction.fm](http://addiction.fm/](https://sewerdev.github.io/Addiction.fm/) убирает выбор полностью: одна кнопка, одно состояние, один поток звука. Работает в браузере, не требует установки, не просит логин.
+[Addiction.fm](https://sewerdev.github.io/Addiction.fm/) убирает выбор полностью: одна кнопка, одно состояние, один поток звука. Работает в браузере, не требует установки, не просит логин.
 
 ---
 
@@ -251,7 +283,7 @@ Telegram: [@VestronVulture](https://t.me/VestronVulture)
 - **268 брейков** - банк перетасовывается при каждом заходе
 - **Детерминированные треки** - счётчик `‹‹ #N ››` фиксирует конкретный трек по seed-номеру внутри сеанса
 - **Запись в WAV** - кнопка ⏺️ rec захватывает трек в реальном времени и скачивает как `.wav`
-- **Пропеллер** - крутится при воспроизведении, плавно тормозит при паузе
+- **Пропеллер** - крутится в темпе текущего состояния, плавно тормозит на паузе
 
 ---
 
@@ -259,7 +291,7 @@ Telegram: [@VestronVulture](https://t.me/VestronVulture)
 
 | Файл | Что внутри | Обязателен |
 |------|------------|------------|
-| `addiction-fm.html` | приложение целиком: движок, интерфейс, обложка | да |
+| `index.html` | приложение целиком: движок, интерфейс, обложка | да |
 | `breaks.js` | базовый банк, 49 брейков | да |
 | `breaks2.js` | основной пак, 219 брейков | нет, но с ним интереснее |
 | `breaks3.js` | добор пака | нет |
@@ -275,7 +307,7 @@ Telegram: [@VestronVulture](https://t.me/VestronVulture)
 | `Space` | пауза |
 | `1` `2` `3` | состояние |
 | `V` / `B` | трек назад / вперёд |
-| `X` | другой брейк |
+| `X` | другой брейк - в РАЗГОНЕ, при включённом кубике 🎲 |
 
 ---
 

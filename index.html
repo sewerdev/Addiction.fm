@@ -137,7 +137,7 @@
   .playerwrap{position:sticky; bottom:12px; margin-top:20px; padding-bottom:16px;}
   .player{
     background:var(--surface); border:1px solid var(--border); border-radius:26px;
-    width:100%; padding:14px 18px; display:flex; align-items:center; gap:18px; flex-wrap:nowrap;
+    width:100%; padding:14px 16px; display:flex; align-items:center; gap:12px; flex-wrap:nowrap;
     box-shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
   }
   .playbtn{
@@ -146,12 +146,16 @@
   }
   .playbtn:hover{opacity:.88;}
   .playbtn svg{width:20px; height:20px;}
-  .now{min-width:0; flex:1 1 auto; max-width:320px;}
-  .now .title{font-weight:600; font-size:14.5px;}
+  /* Имя брейка - плашка фиксированной ширины: 124px закрывает ~90% имён из банка
+     (медиана 90px, длинне - многоточие, полное в title). Ширина не зависит от текста,
+     поэтому ползунки не скачут при смене пресета и плашка не схлопывается. */
+  .now{flex:0 1 124px; min-width:96px;}
+  .now .title{font-weight:600; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .now .sub{font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ctl{display:flex; flex-direction:column; gap:3px; flex:1.5 1 0; min-width:120px;}
+  .ctl{display:flex; flex-direction:column; gap:3px; flex:1 1 0; min-width:100px;}
   .ctl label{font-size:11.5px; color:var(--text2); display:flex; align-items:baseline; justify-content:center; gap:6px; white-space:nowrap; text-align:center;}
-  .ctl label .val{color:var(--text); font-weight:600; font-variant-numeric:tabular-nums;}
+  .ctl label>span:first-child{min-width:0; overflow:hidden; text-overflow:ellipsis;}
+  .ctl label .val{color:var(--text); font-weight:600; font-variant-numeric:tabular-nums; flex:0 0 auto;}
   input[type="range"]{
     -webkit-appearance:none; appearance:none; width:100%; height:24px; background:transparent; cursor:pointer;
   }
@@ -162,22 +166,22 @@
   }
   input[type="range"]::-moz-range-track{height:4px; border-radius:2px; background:var(--surface2); border:1px solid var(--border);}
   input[type="range"]::-moz-range-thumb{width:12px; height:12px; border-radius:50%; background:var(--accent); border:2px solid var(--bg);}
-  .timer{display:flex; align-items:center; justify-content:flex-end; gap:8px; color:var(--text2); font-size:12px; white-space:nowrap; flex:1.2 1 0;}
-  .timer .chip{flex:1 1 0; text-align:center; padding:5px 8px; min-width:34px;}
+  .timer{display:flex; align-items:center; justify-content:flex-end; gap:8px; color:var(--text2); font-size:12px; white-space:nowrap; flex:0 1 auto; min-width:0;}
+  .timer .chip{flex:0 1 auto; text-align:center; padding:5px 8px; min-width:0;}
   .chip{
     border:1px solid var(--border); background:var(--bg); color:var(--text2); border-radius:999px;
     font-size:12.5px; padding:5px 10px; cursor:pointer; font-family:inherit; min-height:28px;
   }
   .chip:hover{background:var(--surface2);}
   .chip.active{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:600;}
-  .countdown{font-variant-numeric:tabular-nums; font-size:13px; color:var(--text2); min-width:44px;}
+  .countdown{font-variant-numeric:tabular-nums; font-size:13px; color:var(--text2); min-width:0; flex:0 0 auto;}
   .trackctl{display:flex; align-items:center; justify-content:center; gap:6px; flex:0 0 auto;}
   .trackbtn{font-size:15px; line-height:1; padding:5px 10px; letter-spacing:-1px;}
-  .rollbtn{flex:0 0 auto; font-size:14px; line-height:1; padding:5px 9px;}
-  .rollbtn[hidden]{display:none;}
-  /* с включённым кубиком в ряд встаёт лишняя кнопка - отдаём ей место */
-  body.dice-on .now{flex:1 1 0; max-width:none;}
-  body.dice-on .ctl{flex:0 1 160px;}
+  .rollbtn{flex:0 0 35px; font-size:14px; line-height:1; padding:5px 0; text-align:center;}
+  /* кубик есть только в разгоне, но при включённом кубике слот держим занятым
+     всегда - иначе при смене пресета ползунки подпрыгивают на его ширину */
+  .rollbtn.off{display:none;}
+  .rollbtn.reserved{visibility:hidden; pointer-events:none;}
   .rollbtn.rolled{animation:rollspin .5s cubic-bezier(.2,.7,.2,1);}
   @keyframes rollspin{from{transform:rotate(0deg) scale(.9);} to{transform:rotate(360deg) scale(1);}}
   .ver{font-size:12px; font-weight:600; color:var(--text2); border:1px solid var(--border); border-radius:999px; padding:1px 7px; vertical-align:middle;}
@@ -198,10 +202,17 @@
   footer a{color:var(--accent); text-decoration:none; font-weight:600;}
   footer a:hover{text-decoration:underline;}
 
-  @media (max-width:860px){
-    .player{gap:12px; padding:12px 14px;}
-    .player .ctl{min-width:100px;}
+  @media (max-width:980px){
+    .player{gap:9px; padding:12px 12px;}
+    .now{flex:0 1 104px; min-width:80px;}
     .now .title{font-size:13.5px;}
+    .player .ctl{min-width:78px;}
+    .player .trackbtn{padding:5px 7px;}
+    .player .trackno{min-width:24px;}
+    .player .recbtn{padding:5px 8px;}
+    .timer{gap:5px;}
+    .timer .chip{padding:5px 5px; font-size:12px;}
+    .countdown{font-size:12px;}
   }
 
   @media (max-width:680px){
@@ -227,7 +238,7 @@
     .player .recwrap{grid-area:rec;}
     .player .trackctl{grid-area:tracks; justify-content:space-between; gap:10px;}
     .player .trackctl .trackbtn{flex:1 1 0; padding:9px 0; font-size:17px;}
-    .player .recwrap .rollbtn{padding:5px 10px; font-size:15px;}
+    .player .recwrap .rollbtn{width:38px; flex-basis:38px; font-size:15px;}
     .player .trackno{flex:0 0 60px; font-size:14px;}
     .player .ctl-muffle{grid-area:muffle;}
     .player .ctl-vol{grid-area:vol;}
@@ -291,7 +302,7 @@
 
   <section class="hero">
     <h1 data-i18n="heroTitle">Одна кнопка - и звук создаётся под ваше состояние.</h1>
-    <p data-i18n="heroText">Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, реко  ендаций и выбор     треков.</p>
+    <p data-i18n="heroText">Ничего не стримится и не качается: звук синтезируется прямо в браузере и никогда не повторяется. Без аккаунтов, рекомендаций и выбора треков.</p>
   </section>
 
   <section class="moods" role="group" aria-label="Состояния">
@@ -333,7 +344,7 @@
         <button class="chip trackbtn" id="nextBtn" aria-label="Следующий трек">&#8250;&#8250;</button>
       </div>
       <div class="recwrap">
-        <button class="chip rollbtn" id="rollBtn" aria-label="Другой брейк" title="Другой брейк" hidden>&#127922;</button>
+        <button class="chip rollbtn off" id="rollBtn" aria-label="Другой брейк" title="Другой брейк">&#127922;</button>
         <button class="recbtn" id="recBtn" title="Записать и скачать трек">⏺ rec</button>
       </div>
       <div class="ctl ctl-muffle">
@@ -391,7 +402,7 @@ let diceOn = cfg.dice === true;
 function saveCfg(){
   try {
     localStorage.setItem(CFG_KEY, JSON.stringify({
-      lang, dark, vol: state.volume, int: state.intensity, dice: diceOn
+      lang, dark, vol: state.volume, int: state.intensity, dice: diceOn, mood: state.mood
     }));
   } catch(e){}
 }
@@ -489,35 +500,52 @@ function L(key){ return I18N[lang][key] || I18N.ru[key] || key; }
 function applyLang(){
   document.documentElement.lang = lang;
   $$("[data-i18n]").forEach(el => { el.textContent = L(el.dataset.i18n); });
-  $("#hint").innerHTML = L(diceOn ? "hintDice" : "hint");
   $("#footer").innerHTML = L("footer");
   $$(".chip.lang").forEach(c => c.classList.toggle("active", c.dataset.lang === lang));
-  const rb = $("#rollBtn");
-  if (rb){ rb.title = L("roll"); rb.setAttribute("aria-label", L("roll")); }
   const rec = $("#recBtn");
-  if (rec){ rec.title = L("recTitle"); rec.setAttribute("aria-label", L("recTitle")); }
+  rec.title = L("recTitle");
+  rec.setAttribute("aria-label", L("recTitle"));
   bankInfo();
-  updateNow();
-  applyDice();
+  renderPlayer();
 }
 
-/* кубик 🎲 «другой брейк»: кнопка в плеере, горячая клавиша X и пункт
-   в шторке появляются только когда переключатель в настройках включён */
-function applyDice(){
-  document.body.classList.toggle("dice-on", diceOn);
-  const btn = $("#diceBtn");
-  if (btn) btn.setAttribute("aria-checked", diceOn ? "true" : "false");
-  const st = $("#diceState");
-  if (st) st.textContent = L(diceOn ? "on" : "off");
+/* Единственная точка, рисующая плеер. Всё, что зависит от языка, кубика,
+   пресета, статуса воспроизведения и имени брейка, пишется только здесь -
+   раньше это было размазано по applyLang/updateNow/applyDice/setMood. */
+function renderPlayer(){
+  const drive = state.mood === "drive";
+  const bn = drive ? state.breakName : "";
+  const title = $("#nowTitle");
+  title.textContent = bn || L(state.mood);
+  title.title = bn;
+  const status = state.playing ? L("playing") : (wasStarted ? L("paused") : L("ready"));
+  /* жанр заполняет пустоту только в фокусе/покое: в разгоне он мигал бы
+     до расшифровки брейка */
+  const genre = (bn || drive) ? "" : L(state.mood + "Genre");
+  const sub = $("#nowSub");
+  sub.textContent = genre ? status + " · " + genre : status;
+  sub.title = genre;
+
+  /* кубик 🎲: выключен - места не занимает; включён, но не разгон - слот пустой
+     (visibility), иначе при смене пресета ползунки прыгают на его ширину */
   const rb = $("#rollBtn");
-  if (rb) rb.hidden = !diceOn || state.mood !== "drive";
-  const hint = $("#hint");
-  if (hint) hint.innerHTML = L(diceOn ? "hintDice" : "hint");
+  rb.classList.toggle("off", !diceOn);
+  rb.classList.toggle("reserved", diceOn && !drive);
+  rb.setAttribute("aria-hidden", diceOn && drive ? "false" : "true");
+  rb.title = L("roll");
+  rb.setAttribute("aria-label", L("roll"));
+  $("#diceBtn").setAttribute("aria-checked", diceOn ? "true" : "false");
+  $("#diceState").textContent = L(diceOn ? "on" : "off");
+  $("#hint").innerHTML = L(diceOn ? "hintDice" : "hint");
+
+  $("#trackNo").textContent = "#" + trackNo;
+  $$(".mood").forEach(c => c.classList.toggle("active", c.dataset.m === state.mood));
 }
 
 /* ================= state ================= */
 const state = {
-  mood:"focus", playing:false,
+  mood: (cfg.mood === "drive" || cfg.mood === "focus" || cfg.mood === "calm") ? cfg.mood : "focus",
+  playing:false,
   intensity: typeof cfg.int === "number" ? cfg.int : .55,
   volume: typeof cfg.vol === "number" ? cfg.vol : .7,
   timerMin:0, timerEnd:null
@@ -581,18 +609,6 @@ function trackParams(n){
 }
 function tf(f){ return f * Math.pow(2, variation.transpose / 12); }
 
-function updateNow(){
-  $("#nowTitle").textContent = L(state.mood);
-  const bn = (state.mood === "drive" && state.breakName) ? state.breakName : "";
-  let sub = state.playing
-    ? (bn ? L("playing") + " · " + bn
-          : L("playing") + " · " + L("track") + " #" + trackNo)
-    : (wasStarted ? L("paused") : L("ready"));
-  if (!state.playing && bn) sub += " · " + bn;
-  const el = $("#nowSub");
-  el.textContent = sub;
-  el.title = bn; /* полное имя во всплывающей подсказке, если всё же обрезалось */
-}
 function msArtist(){
   return (state.mood === "drive" && state.breakName)
     ? state.breakName
@@ -608,12 +624,11 @@ function setMood(m, autoplay){
   trackNo = trackNos[m];
   manualBreak = null;
   state.breakName = "";
-  $("#rollBtn").hidden = !diceOn || (m !== "drive");
   variation = trackParams(trackNo);
-  $("#trackNo").textContent = "#" + trackNo;
-  $$(".mood").forEach(c => c.classList.toggle("active", c.dataset.m === m));
+  renderPlayer();
+  saveCfg();
   if (state.playing || autoplay) start();
-  else { updateNow(); if (msReady) mediaSync(false); }
+  else if (msReady) mediaSync(false);
 }
 $$(".mood").forEach(c => c.addEventListener("click", () => setMood(c.dataset.m, true)));
 
@@ -623,7 +638,7 @@ function uiPlaying(on){
   $("#playIcon").innerHTML = on
     ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
     : '<path d="M8 5v14l11-7z"/>';
-  updateNow();
+  renderPlayer();
   mediaSync(on);
 }
 
@@ -750,6 +765,13 @@ function ensureCtx(){
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0.8;
     master.connect(comp); comp.connect(analyser); analyser.connect(ctx.destination);
+    /* iOS при блокировке экрана усыпляет контекст, а visibilitychange при этом
+       может не прийти - ловим пробуждение сами и перепланировываем сетку заново */
+    ctx.onstatechange = () => {
+      if (ctx.state === "running" && state.playing && session && session.kick){
+        clearTimeout(session.tid); session.kick();
+      }
+    };
   }
   if (ctx.state === "suspended") ctx.resume();
 }
@@ -805,12 +827,14 @@ function getBreak(idx, cb){
   for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
   ctx.decodeAudioData(arr.buffer, buf => {
     breakBank[mapped] = { name: meta.name, bpm: meta.bpm, bars: meta.bars, buf, lead: breakLead(buf) };
+    /* освобождаем исходную base64-строку: ~33% объёма банка держались в памяти зря */
+    meta.b64 = null;
     cb(breakBank[mapped]);
   }, () => {});
 }
 function setBreakName(name){
   state.breakName = name || "";
-  updateNow();
+  renderPlayer();
   if (msReady) mediaSync(state.playing);
 }
 /* большие паки брейков подтягиваются отдельными файлами и только для РАЗГОНА,
@@ -881,7 +905,6 @@ function rollBreak(){
 }
 
 function rnd(a, b){ return a + Math.random() * (b - a); }
-function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
 let whiteBuf = null, pinkBuf = null, brownBuf = null;
 function noiseBuffers(){
@@ -986,18 +1009,6 @@ function sub(dest, t, freq, dur, v){
   g.gain.setValueAtTime(v, t + dur * 0.6);
   g.gain.linearRampToValueAtTime(0.0001, t + dur);
   o.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + 0.05);
-}
-function stab(dest, t, freqs, v){
-  freqs.forEach(fr => {
-    [-8, 8].forEach(det => {
-      const o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = fr; o.detune.value = det;
-      const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 900; f.Q.value = 0.7;
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(v / freqs.length, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-      o.connect(f); f.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.25);
-    });
-  });
 }
 function pluck(dest, t, freq, v){
   const o = ctx.createOscillator(); o.type = "triangle"; o.frequency.value = freq;
@@ -1111,12 +1122,30 @@ function drumBus(s, cutoff){
 }
 function schedule(s, stepFn, stepDurFn){
   let step = 0, next = ctx.currentTime + 0.1;
+  /* Упреждение планирования. В фоне браузер режет setTimeout до ~1с и больше,
+     причём на мобильных document.hidden при сворачивании/блокировке экрана горит
+     не всегда. Поэтому не доверяем флагу, а замеряем фактический интервал между
+     тиками и подрастаем запас под реальный троттлинг - иначе сетка отстаёт,
+     включается догон, и куча запланированных нот стартует разом (шипение). */
+  let lead = 0.25, lastTick = performance.now();
   const tick = () => {
     if (session !== s) return;
     const now = ctx.currentTime;
-    /* в фоновой вкладке таймеры троттлятся до ~1 раза в секунду,
-       поэтому упреждение планирования увеличиваем до 1.6 с - иначе дыры в звуке */
-    const ahead = document.hidden ? 1.6 : 0.25;
+    const t = performance.now();
+    const dt = (t - lastTick) / 1000; lastTick = t;
+    if (dt > lead) lead = Math.min(2.5, dt * 1.5 + 0.1);        /* троттлят - растягиваем буфер */
+    else if (dt < lead * 0.5) lead = Math.max(0.25, lead * 0.8); /* опомнились - аккуратно стягиваем */
+    const ahead = document.hidden ? Math.max(1.6, lead) : lead;
+    /* Вернулись из жёсткой заморозки (несколько секунд простоя): ноты, успевшие
+       запланироваться «в будущее» до сна, сейчас выстрелят разом. На полсекунды
+       приглушаем мастер, чтобы заглушить этот всплеск, и отпускаем на новом темпе. */
+    if (dt > 3 && master){
+      const g = master.gain;
+      g.cancelScheduledValues(now);
+      g.setValueAtTime(g.value, now);
+      g.linearRampToValueAtTime(0.0001, now + 0.08);
+      g.linearRampToValueAtTime(Math.pow(state.volume, 1.5), now + 0.6);
+    }
     /* Свёрнутое окно браузер может заморозить на десятки секунд. Догонять
        пропущенное нельзя: сотни нот со временем «в прошлом» стартуют разом и
        дают тот самый шипящий всплеск. Прыгаем в «сейчас», сохраняя фазу сетки
@@ -1183,7 +1212,6 @@ const AMEN = [
   { k:[0,2],    s:[4,12], g:[7,9] },
   { k:[0,2,10], s:[4,14], g:[7,9] }
 ];
-const STABS = [ [220,261.63,329.63], [174.61,220,261.63], [196,246.94,293.66] ];
 const CALM_BELLS = [329.63,392,440,523.25,587.33];
 
 /* ================= moods ================= */
@@ -1350,7 +1378,7 @@ function setTrack(n){
   variation = trackParams(trackNo);
   $("#trackNo").textContent = "#" + trackNo;
   if (state.playing) start();
-  else { updateNow(); if (msReady) mediaSync(false); }
+  else { renderPlayer(); if (msReady) mediaSync(false); }
 }
 $("#nextBtn").addEventListener("click", () => setTrack(trackNo + 1));
 $("#prevBtn").addEventListener("click", () => setTrack(trackNo - 1));
@@ -1387,13 +1415,13 @@ $("#recBtn").addEventListener("click", () => {
     if (recNode) { try { recNode.disconnect(); } catch(e){} recNode = null; }
     /* собираем PCM в WAV */
     const sr = ctx.sampleRate;
-    const L = new Float32Array(recPCM.L.reduce((s, c) => s + c.length, 0));
-    const R = new Float32Array(recPCM.R.reduce((s, c) => s + c.length, 0));
+    const left  = new Float32Array(recPCM.L.reduce((s, c) => s + c.length, 0));
+    const right = new Float32Array(recPCM.R.reduce((s, c) => s + c.length, 0));
     let pos = 0;
-    recPCM.L.forEach(c => { L.set(c, pos); pos += c.length; });
+    recPCM.L.forEach(c => { left.set(c, pos); pos += c.length; });
     pos = 0;
-    recPCM.R.forEach(c => { R.set(c, pos); pos += c.length; });
-    const wav = pcmToWav(L, R, sr);
+    recPCM.R.forEach(c => { right.set(c, pos); pos += c.length; });
+    const wav = pcmToWav(left, right, sr);
     const blob = new Blob([wav], { type: 'audio/wav' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1505,7 +1533,7 @@ document.addEventListener("click", e => {
 });
 $$(".chip.lang").forEach(c =>
   c.addEventListener("click", () => { lang = c.dataset.lang; applyLang(); saveCfg(); }));
-$("#diceBtn").addEventListener("click", () => { diceOn = !diceOn; applyDice(); saveCfg(); });
+$("#diceBtn").addEventListener("click", () => { diceOn = !diceOn; renderPlayer(); saveCfg(); });
 $("#aboutBtn").addEventListener("click", () => { menu.hidden = true; overlay.hidden = false; });
 $("#closeAbout").addEventListener("click", () => { overlay.hidden = true; });
 overlay.addEventListener("click", e => { if (e.target === overlay) overlay.hidden = true; });
@@ -1513,6 +1541,8 @@ overlay.addEventListener("click", e => { if (e.target === overlay) overlay.hidde
 /* ================= init ================= */
 applyTheme();
 applyLang();
+/* восстановить последний выбранный пресет в интерфейсе (без автозапуска) */
+if (state.mood !== "focus") setMood(state.mood, false);
 /* доп. банки подтягиваем в фоне после отрисовки: счётчик в «о приложении»
    и 🎲 сразу видят полный банк, а старт страницы не тормозится */
 (window.requestIdleCallback || (f => setTimeout(f, 1500)))(loadExtraBank);
@@ -1521,13 +1551,13 @@ applyLang();
 const propEl = document.querySelector(".prop");
 let propAngle = 0;
 let propVel   = 0;
-const PROP_SPEED = 3.6;
-const PROP_ACC   = 0.07;
-const PROP_DEC   = 0.04;
+const PROP_SPEED = { drive: 3.0, focus: 1.4, calm: 0.5 };
+const PROP_ACC   = 0.05;
+const PROP_DEC   = 0.045;
 (function propLoop(){
   requestAnimationFrame(propLoop);
   if (reducedMotion) return;
-  const target = state.playing ? PROP_SPEED : 0;
+  const target = state.playing ? (PROP_SPEED[state.mood] || PROP_SPEED.drive) : 0;
   const alpha  = propVel < target ? PROP_ACC : PROP_DEC;
   propVel += (target - propVel) * alpha;
   if (propVel < 0.005) propVel = 0;
@@ -1542,7 +1572,7 @@ if (location.hash.startsWith("#demo")){
   document.body.classList.add("playing");
   state.playing = true; wasStarted = true;
   $("#playIcon").innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-  updateNow();
+  renderPlayer();
   state.playing = false;
   if (part === "menu") menu.hidden = false;
   if (part === "about") overlay.hidden = false;
