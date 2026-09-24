@@ -5,7 +5,7 @@
 **Generative radio. One button — sound built for your mental state.**
 
 [![Open the radio](https://img.shields.io/badge/%E2%96%B6%20Open%20the%20radio-2ea44f?style=for-the-badge&logo=html5&logoColor=white)](https://sewerdev.github.io/Addiction.fm/)
-![version 2.2](https://img.shields.io/badge/version-2.2-1a1a1a?style=for-the-badge)
+![version 2.3](https://img.shields.io/badge/version-2.3-1a1a1a?style=for-the-badge)
 ![268 breaks](https://img.shields.io/badge/breaks-268-c0392b?style=for-the-badge)
 ![zero dependencies](https://img.shields.io/badge/dependencies-0-b8860b?style=for-the-badge)
 ![Deploy site](https://github.com/sewerdev/Addiction.fm/actions/workflows/deploy-site.yml/badge.svg)
@@ -28,7 +28,7 @@
 <details open>
 <summary><b>Contents</b></summary>
 
-- [🔥 What's new in 2.2](#-whats-new-in-22)
+- [🔥 What's new in 2.3](#-whats-new-in-23)
 - [💡 Why this exists](#-why-this-exists)
 - [🎚 States](#-states)
 - [🔊 How it works](#-how-it-works)
@@ -43,13 +43,17 @@
 
 ---
 
-## 🔥 What's new in 2.2
+## 🔥 What's new in 2.3
 
 **The player bar stopped moving.** The break name now sits in a fixed-width plate that covers ~90% of the bank, with the full name in a tooltip. The 🎲 button keeps its slot reserved while the dice is switched on, so changing presets no longer nudges the sliders by a pixel, and long labels truncate instead of colliding. The whole row still holds together down to 633 px.
 
 **Background playback got tougher.** The scheduler no longer trusts `document.hidden` — it measures how late its own ticks actually arrive and grows the lookahead to match real throttling. Coming back from a hard freeze ducks the master for half a second instead of firing every queued note at once, and an `AudioContext` state-change handler re-primes the grid when iOS wakes the context without telling anyone.
 
 **The propeller has three speeds now.** DRIVE, FOCUS and CALM spin at their own rate and ease between them instead of snapping to a stop.
+
+**The README grew up.** One bilingual page with a hero, badges and a table of contents; the 2.1 notes folded away, and the "run it locally" section dropped now that the radio lives at [sewerdev.github.io/Addiction.fm](https://sewerdev.github.io/Addiction.fm/).
+
+**Publishing is automated.** Pushing to `main` runs `.github/workflows/deploy-site.yml`, which builds the Pages artifact and deploys it — no more manual branch pushes to `gh-pages`.
 
 **Fixes**
 
@@ -197,7 +201,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 **Генеративное радио. Одна кнопка — и звук создаётся под твоё состояние.**
 
 [![Слушать онлайн](https://img.shields.io/badge/%E2%96%B6%20%D0%A1%D0%BB%D1%83%D1%88%D0%B0%D1%82%D1%8C%20%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD-2ea44f?style=for-the-badge&logo=html5&logoColor=white)](https://sewerdev.github.io/Addiction.fm/)
-![версия 2.2](https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-2.2-1a1a1a?style=for-the-badge)
+![версия 2.3](https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-2.3-1a1a1a?style=for-the-badge)
 ![268 брейков](https://img.shields.io/badge/%D0%B1%D1%80%D0%B5%D0%B9%D0%BA%D0%BE%D0%B2-268-c0392b?style=for-the-badge)
 ![ноль зависимостей](https://img.shields.io/badge/%D0%B7%D0%B0%D0%B2%D0%B8%D1%81%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B5%D0%B9-0-b8860b?style=for-the-badge)
 ![Деплой сайта](https://github.com/sewerdev/Addiction.fm/actions/workflows/deploy-site.yml/badge.svg)
@@ -220,7 +224,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 <details open>
 <summary><b>Содержание</b></summary>
 
-- [🔥 Что нового в 2.2](#-что-нового-в-22)
+- [🔥 Что нового в 2.3](#-что-нового-в-23)
 - [💡 Зачем это существует](#-зачем-это-существует)
 - [🎚 Состояния](#-состояния)
 - [🔊 Как это работает](#-как-это-работает)
@@ -234,13 +238,17 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 
 ---
 
-## 🔥 Что нового в 2.2
+## 🔥 Что нового в 2.3
 
 **Плеер перестал ездить.** Имя брейка живёт в плашке фиксированной ширины — она закрывает ~90% банка, полное имя лежит в подсказке. Когда кубик включён, его слот остаётся занятым, поэтому смена пресета больше не сдвигает ползунки на пиксель, а длинные подписи обрезаются, а не наезжают друг на друга. Ряд целиком держится вплоть до 633 px.
 
 **Фон стал жёстче.** Планировщик больше не верит флагу `document.hidden` — он меряет, насколько реально опаздывают его тики, и растягивает упреждение под фактический троттлинг. Возврат из жёсткой заморозки на полсекунды приглушает мастер вместо того, чтобы выстрелить всеми запланированными нотами разом, а `AudioContext` сам перепланировывает сетку, когда iOS разбудит контекст и никому об этом не скажет.
 
 **У пропеллера три скорости.** РАЗГОН, ФОКУС и ПОКОЙ крутятся каждая в своём темпе и плавно перетекают друг в друга, а не обрываются щелчком.
+
+**Ридми повзрослел.** Одна двуязычная страница с шапкой, бейджами и оглавлением; заметки про 2.1 свёрнуты, а раздел «как запустить локально» удалён — радио живёт на [sewerdev.github.io/Addiction.fm](https://sewerdev.github.io/Addiction.fm/).
+
+**Публикация автоматизирована.** Пуш в `main` запускает `.github/workflows/deploy-site.yml`, который собирает артефакт Pages и выкладывает его — руками ветку больше трогать не нужно.
 
 **Исправления**
 
