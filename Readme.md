@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="screens/banner.png" alt="Addiction.fm — generative radio" width="100%">
+</p>
+
 <div align="center">
 
 # 🎧 [Addiction.fm](https://sewerdev.github.io/Addiction.fm/)
@@ -14,20 +18,12 @@
 
 </div>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/0e1c4752-30f1-4c75-a174-8396a07390bc" alt="Addiction.fm on desktop" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/72c2653e-4ca4-4e9e-8e8c-ba00ada297b9" alt="Mobile player" width="32%">
-  <img src="https://github.com/user-attachments/assets/b9c78e26-c095-43c0-8128-979a68d58972" alt="Mobile settings" width="32%">
-</p>
-
 > No playlists. No accounts. No ads. Pick a state — get a unique sound that never repeats.
 
 <details open>
 <summary><b>Contents</b></summary>
 
+- [📸 How it looks](#-how-it-looks)
 - [🔥 What's new in 2.3](#-whats-new-in-23)
 - [💡 Why this exists](#-why-this-exists)
 - [🎚 States](#-states)
@@ -40,6 +36,29 @@
 - [Русский](#-русский)
 
 </details>
+
+---
+
+## 📸 How it looks
+
+Three states on one phone screen — the accent colour, the ambient glow and the
+sliders all follow whichever state you pick:
+
+<p align="center">
+  <img src="screens/states.png" alt="DRIVE, FOCUS and CALM on a phone" width="100%">
+</p>
+
+Light theme, the settings menu, and the About dialog:
+
+<p align="center">
+  <img src="screens/themes.png" alt="Light theme, settings and About" width="100%">
+</p>
+
+Wide layout — the player becomes a single sticky row:
+
+<p align="center">
+  <img src="screens/desktop.png" alt="Addiction.fm on desktop" width="100%">
+</p>
 
 ---
 
@@ -121,7 +140,7 @@ Addiction.fm removes the choice entirely: one button, one state, one stream of s
 | State | Genre | For |
 |:------|:------|:--|
 | 🔴 **DRIVE** | Amen-break · Jungle · ~180 BPM | Energy, task focus, movement |
-| 🔵 **FOCUS** | Deep ambient | Sub-bass and dark pads only — no drums |
+| 🔵 **FOCUS** | Deep ambient | Sub-bass, dark pads, rare synth plucks — no drums |
 | 🟢 **CALM** | Slow drone + rain | Relaxation, sleep, recovery |
 
 ---
@@ -131,7 +150,7 @@ Addiction.fm removes the choice entirely: one button, one state, one stream of s
 Sound is **generated in real time** via the Web Audio API — this is not streaming, not a playlist. Every press creates a unique combination:
 
 - **DRIVE** — a break from a 268-loop bank sliced into 16th notes with DJ jumps, stutters and rolls, soft piano on top
-- **FOCUS** — sub-bass synthesized in the chosen key, dark pads through a delay chain
+- **FOCUS** — sub-bass synthesized in the chosen key, dark pads whose lowpass is swept by a 0.06 Hz LFO
 - **CALM** — drone from detuned oscillators, filtered noise, slow bells
 
 ---
@@ -155,6 +174,7 @@ Sound is **generated in real time** via the Web Audio API — this is not stream
 | `breaks.js` | base bank, 49 breaks | yes |
 | `breaks2.js` | main pack, 219 breaks | optional, but far more fun |
 | `breaks3.js` | pack top-up | optional |
+| `screens/` | README screenshots only — the site doesn't load them | no
 
 Without `breaks2.js` and `breaks3.js` the radio runs on the base bank; without `breaks.js` it falls back to synthesized drums. You can delete them for fun, but the songs won't sound very good.
 
@@ -180,7 +200,6 @@ Without `breaks2.js` and `breaks3.js` the radio runs on the base bank; without `
 |:------|:-------------------|
 | **Web Audio API** | synthesis, slicing, mixing, real-time recording |
 | **Media Session API** | system media controls, artwork, sleep-timer countdown |
-| **OfflineAudioContext** | full track and stem rendering without artifacts |
 | **ScriptProcessorNode** | PCM capture for WAV export |
 | **Pure HTML/JS** | zero dependencies, zero frameworks, single file |
 
@@ -210,20 +229,12 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 
 </div>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/34c4e750-e09f-4de1-b251-ba7719a08c4a" alt="Addiction.fm на десктопе" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/61ead776-63ff-4483-bc96-e37a83de79f7" alt="Мобильный плеер" width="32%">
-  <img src="https://github.com/user-attachments/assets/255de5c5-1ffb-4a90-a7cd-198badc76b3a" alt="Мобильные настройки" width="32%">
-</p>
-
 > Никаких плейлистов, аккаунтов и рекламы. Выбери состояние — получи уникальный звук, который никогда не повторится.
 
 <details open>
 <summary><b>Содержание</b></summary>
 
+- [📸 Как это выглядит](#-как-это-выглядит)
 - [🔥 Что нового в 2.3](#-что-нового-в-23)
 - [💡 Зачем это существует](#-зачем-это-существует)
 - [🎚 Состояния](#-состояния)
@@ -235,6 +246,29 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 - [👤 Автор](#-автор)
 
 </details>
+
+---
+
+## 📸 Как это выглядит
+
+Три состояния на одном экране телефона — акцент, фоновая подсветка и ползунки
+перекрашиваются под выбранный пресет:
+
+<p align="center">
+  <img src="screens/states.png" alt="РАЗГОН, ФОКУС и ПОКОЙ на телефоне" width="100%">
+</p>
+
+Светлая тема, меню настроек и окно «о приложении»:
+
+<p align="center">
+  <img src="screens/themes.png" alt="Светлая тема, настройки и «о приложении»" width="100%">
+</p>
+
+Широкая вёрстка — плеер собирается в одну липкую строку:
+
+<p align="center">
+  <img src="screens/desktop.png" alt="Addiction.fm на десктопе" width="100%">
+</p>
 
 ---
 
@@ -316,7 +350,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 | Состояние | Жанр | Для чего |
 |:----------|:-----|:---------|
 | 🔴 **РАЗГОН** | Amen-break · Jungle · ~180 BPM | Энергия, фокус на задаче, движение |
-| 🔵 **ФОКУС** | Глубокий эмбиент | Только суббасс и тёмные пэды — никаких ударных |
+| 🔵 **ФОКУС** | Глубокий эмбиент | Суббасс, тёмные пэды, редкие щипки — никаких ударных |
 | 🟢 **ПОКОЙ** | Медленный дрон + дождь | Расслабление, сон, восстановление |
 
 ---
@@ -326,7 +360,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 Звук **генерируется в реальном времени** через Web Audio API — это не стриминг и не плейлист. Каждое нажатие создаёт уникальную комбинацию:
 
 - **РАЗГОН** — брейк из банка на 268 петель нарезается по 16-м долям с DJ-прыжками, статтерами и роллами, мягкое пианино поверх
-- **ФОКУС** — суббасс синтезируется в заданной тональности, тёмные пэды через delay-цепочку
+- **ФОКУС** — суббасс синтезируется в заданной тональности, тёмные пэды со свипом lowpass от LFO на 0.06 Гц
 - **ПОКОЙ** — дрон из расстроенных осцилляторов, фильтрованный шум, медленные колокольчики
 
 ---
@@ -350,6 +384,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 | `breaks.js` | базовый банк, 49 брейков | да |
 | `breaks2.js` | основной пак, 219 брейков | нет, но с ним интереснее |
 | `breaks3.js` | добор пака | нет |
+| `screens/` | только картинки для README — сайт их не грузит | нет
 
 Без `breaks2.js` и `breaks3.js` радио работает на базовом банке, без `breaks.js` — на синтезированных ударных. Вы можете по приколу их удалить, но звучать песни будут не очень.
 
@@ -375,7 +410,6 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 |:-----|:------------------|
 | **Web Audio API** | синтез, нарезка, микширование, запись в реальном времени |
 | **Media Session API** | системный пункт управления, обложка, обратный отсчёт таймера |
-| **OfflineAudioContext** | рендер полных треков и стемов без артефактов |
 | **ScriptProcessorNode** | захват PCM для экспорта в WAV |
 | **Чистый HTML/JS** | ноль зависимостей, ноль фреймворков, один файл |
 
