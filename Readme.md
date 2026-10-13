@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="screens/banner.png" alt="Addiction.fm — generative radio" width="100%">
+  <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/banner.png" alt="Addiction.fm — generative radio" width="100%">
 </p>
 
 <div align="center">
@@ -9,7 +9,7 @@
 **Generative radio. One button — sound built for your mental state.**
 
 [![Open the radio](https://img.shields.io/badge/%E2%96%B6%20Open%20the%20radio-2ea44f?style=for-the-badge&logo=html5&logoColor=white)](https://sewerdev.github.io/Addiction.fm/)
-![version 2.3](https://img.shields.io/badge/version-2.3-1a1a1a?style=for-the-badge)
+![version 2.4](https://img.shields.io/badge/version-2.4-1a1a1a?style=for-the-badge)
 ![268 breaks](https://img.shields.io/badge/breaks-268-c0392b?style=for-the-badge)
 ![zero dependencies](https://img.shields.io/badge/dependencies-0-b8860b?style=for-the-badge)
 ![Deploy site](https://github.com/sewerdev/Addiction.fm/actions/workflows/deploy-site.yml/badge.svg)
@@ -24,7 +24,7 @@
 <summary><b>Contents</b></summary>
 
 - [📸 How it looks](#-how-it-looks)
-- [🔥 What's new in 2.3](#-whats-new-in-23)
+- [🔥 What's new in 2.4](#-whats-new-in-24)
 - [💡 Why this exists](#-why-this-exists)
 - [🎚 States](#-states)
 - [🔊 How it works](#-how-it-works)
@@ -45,24 +45,52 @@ Three states on one phone screen — the accent colour, the ambient glow and the
 sliders all follow whichever state you pick:
 
 <p align="center">
-  <img src="screens/states.png" alt="DRIVE, FOCUS and CALM on a phone" width="100%">
+  <a href="https://github.com/sewerdev/Addiction.fm/blob/main/screens/states.png">
+    <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/states.png" alt="DRIVE, FOCUS and CALM on a phone" width="100%">
+  </a>
 </p>
 
 Light theme, the settings menu, and the About dialog:
 
 <p align="center">
-  <img src="screens/themes.png" alt="Light theme, settings and About" width="100%">
+  <a href="https://github.com/sewerdev/Addiction.fm/blob/main/screens/themes.png">
+    <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/themes.png" alt="Light theme, settings and About" width="100%">
+  </a>
 </p>
 
 Wide layout — the player becomes a single sticky row:
 
 <p align="center">
-  <img src="screens/desktop.png" alt="Addiction.fm on desktop" width="100%">
+  <a href="https://github.com/sewerdev/Addiction.fm/blob/main/screens/desktop.png">
+    <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/desktop.png" alt="Addiction.fm on desktop" width="100%">
+  </a>
 </p>
 
 ---
 
-## 🔥 What's new in 2.3
+## 🔥 What's new in 2.4
+
+**CALM is violet now, and it breathes.** The preset moved off green (`#46A171` → `#7A5AC8`), and the whole layer — drone, pad, rain, brown noise and the bells — sits on one bus whose gain is rocked by a 0.0917 Hz oscillator: a 10.9 s cycle, about five breaths a minute. The master lowpass dropped from 600–5400 Hz to 420–2420 Hz, the bells moved an octave down into E3–D4 with a 0.55 s attack and a 6 s tail, and the random fifth and octave above were replaced by a single quiet unison an octave below. Measured across three tracks: the envelope energy in the slow 0.02–0.3 Hz band went from 12–17% to 53–58%, sharp rises per 91 s fell by 1.6–1.8×, and everything above 2 kHz dropped from –18 dB to –37 dB. The preset is 3.5 dB quieter overall — that is the intent, not a bug.
+
+**The interface now takes its colour from the state.** One `data-m` attribute on `<html>` repaints the ambient background, the propeller, both sliders, the active chips and the text selection. Typed custom properties (`@property`) let those colours interpolate, so switching DRIVE → FOCUS → CALM cross-fades over half a second instead of snapping; browsers without support just change instantly.
+
+**Sliders finally look filled.** The track is painted up to the thumb — `--p` from JS for WebKit, `::-moz-range-progress` for Firefox. The gradient is clipped to `padding-box`, which kills the coloured crescent that used to peek past the rounded end of the track.
+
+**Touch behaviour got cleaned up.** The grey Android tap-highlight is gone, controls no longer select their text on long-press, and `touch-action: manipulation` removes the double-tap delay — while the press feedback stays. The propeller lost its badge ring, and the logo shrinks slightly below 420 px so the tagline holds one line at 390 px. On mobile the timer chips are pills again rather than vertical capsules.
+
+**The audio graph no longer grows forever.** Every one-shot — kick, hat, snare, sub, pluck, piano and each pad chord — now disconnects its chain once the tail has rung out. DRIVE used to pile up 350 dead filters in three minutes of playing.
+
+**Fixes**
+
+- The pink-noise loop clicked once every 2 seconds: the filter state at the seam didn't match itself. It now gets a crossfaded pre-roll, the same treatment brown noise already had.
+- When the phone froze the context (screen off, audio focus lost), CALM's `setTimeout` chain kept running while `ctx.currentTime` stood still, so up to 40 bells were queued to the same instant and fired together on resume as a clipped burst. A ring is now skipped unless the context clock is actually moving.
+- The propeller animation loop sleeps when the velocity reaches zero instead of being woken 60 times a second — 391 ms of machine time per 30 s of idle, measured.
+- The sleep-timer end bell was retuned (0.12 s attack, 800 Hz cutoff) so it reads as a soft cue rather than an alarm.
+
+<details>
+<summary><b>🕰 Older releases</b> — 2.3 and 2.1 in detail</summary>
+
+### 2.3
 
 **The player bar stopped moving.** The break name now sits in a fixed-width plate that covers ~90% of the bank, with the full name in a tooltip. The 🎲 button keeps its slot reserved while the dice is switched on, so changing presets no longer nudges the sliders by a pixel, and long labels truncate instead of colliding. The whole row still holds together down to 633 px.
 
@@ -81,8 +109,7 @@ Wide layout — the player becomes a single sticky row:
 - Decoded breaks release their base64 source: about a third of the bank's memory is no longer held for nothing.
 - Dead code removed, and the player is now drawn by a single render pass instead of four functions writing the same nodes.
 
-<details>
-<summary><b>🕰 Older releases</b> — 2.1 in detail</summary>
+### 2.1
 
 [Addiction.fm is now hosted!](https://sewerdev.github.io/Addiction.fm/)
 
@@ -141,7 +168,7 @@ Addiction.fm removes the choice entirely: one button, one state, one stream of s
 |:------|:------|:--|
 | 🔴 **DRIVE** | Amen-break · Jungle · ~180 BPM | Energy, task focus, movement |
 | 🔵 **FOCUS** | Deep ambient | Sub-bass, dark pads, rare synth plucks — no drums |
-| 🟢 **CALM** | Slow drone + rain | Relaxation, sleep, recovery |
+| 🟣 **CALM** | Breathing drone + rain | Relaxation, sleep, recovery |
 
 ---
 
@@ -151,7 +178,7 @@ Sound is **generated in real time** via the Web Audio API — this is not stream
 
 - **DRIVE** — a break from a 268-loop bank sliced into 16th notes with DJ jumps, stutters and rolls, soft piano on top
 - **FOCUS** — sub-bass synthesized in the chosen key, dark pads whose lowpass is swept by a 0.06 Hz LFO
-- **CALM** — drone from detuned oscillators, filtered noise, slow bells
+- **CALM** — drone from detuned oscillators, filtered noise, low bells, the whole bed rocked by a 0.09 Hz breathing LFO
 
 ---
 
@@ -220,7 +247,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 **Генеративное радио. Одна кнопка — и звук создаётся под твоё состояние.**
 
 [![Слушать онлайн](https://img.shields.io/badge/%E2%96%B6%20%D0%A1%D0%BB%D1%83%D1%88%D0%B0%D1%82%D1%8C%20%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD-2ea44f?style=for-the-badge&logo=html5&logoColor=white)](https://sewerdev.github.io/Addiction.fm/)
-![версия 2.3](https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-2.3-1a1a1a?style=for-the-badge)
+![версия 2.4](https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-2.4-1a1a1a?style=for-the-badge)
 ![268 брейков](https://img.shields.io/badge/%D0%B1%D1%80%D0%B5%D0%B9%D0%BA%D0%BE%D0%B2-268-c0392b?style=for-the-badge)
 ![ноль зависимостей](https://img.shields.io/badge/%D0%B7%D0%B0%D0%B2%D0%B8%D1%81%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B5%D0%B9-0-b8860b?style=for-the-badge)
 ![Деплой сайта](https://github.com/sewerdev/Addiction.fm/actions/workflows/deploy-site.yml/badge.svg)
@@ -235,7 +262,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 <summary><b>Содержание</b></summary>
 
 - [📸 Как это выглядит](#-как-это-выглядит)
-- [🔥 Что нового в 2.3](#-что-нового-в-23)
+- [🔥 Что нового в 2.4](#-что-нового-в-24)
 - [💡 Зачем это существует](#-зачем-это-существует)
 - [🎚 Состояния](#-состояния)
 - [🔊 Как это работает](#-как-это-работает)
@@ -255,24 +282,52 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 перекрашиваются под выбранный пресет:
 
 <p align="center">
-  <img src="screens/states.png" alt="РАЗГОН, ФОКУС и ПОКОЙ на телефоне" width="100%">
+  <a href="https://github.com/sewerdev/Addiction.fm/blob/main/screens/states.png">
+    <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/states.png" alt="РАЗГОН, ФОКУС и ПОКОЙ на телефоне" width="100%">
+  </a>
 </p>
 
 Светлая тема, меню настроек и окно «о приложении»:
 
 <p align="center">
-  <img src="screens/themes.png" alt="Светлая тема, настройки и «о приложении»" width="100%">
+  <a href="https://github.com/sewerdev/Addiction.fm/blob/main/screens/themes.png">
+    <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/themes.png" alt="Светлая тема, настройки и «о приложении»" width="100%">
+  </a>
 </p>
 
 Широкая вёрстка — плеер собирается в одну липкую строку:
 
 <p align="center">
-  <img src="screens/desktop.png" alt="Addiction.fm на десктопе" width="100%">
+  <a href="https://github.com/sewerdev/Addiction.fm/blob/main/screens/desktop.png">
+    <img src="https://github.com/sewerdev/Addiction.fm/raw/main/screens/desktop.png" alt="Addiction.fm на десктопе" width="100%">
+  </a>
 </p>
 
 ---
 
-## 🔥 Что нового в 2.3
+## 🔥 Что нового в 2.4
+
+**ПОКОЙ стал фиолетовым и научился дышать.** Пресет ушёл с зелёного (`#46A171` → `#7A5AC8`), и весь слой — дрон, пэд, дождь, коричневый шум и сами колокольчики — сидит теперь на одной шине, которую осциллятор 0.0917 Гц качает по громкости: цикл 10.9 с, примерно пять «дыханий» в минуту. Мастер-фильтр опустился с 600–5400 Гц до 420–2420, колокольчики уехали на октаву вниз в E3–D4 с атакой 0.55 с и хвостом 6 с, а случайные квинта и октава сверху заменены одним тихим унисоном на октаву ниже. Замер по трём трекам: доля спектра огибающей в медленной полосе 0.02–0.3 Гц выросла с 12–17% до 53–58%, резких подъёмов на 91 с стало меньше в 1.6–1.8 раза, всё выше 2 кГц упало с –18 дБ до –37 дБ. Пресет стал тише на 3.5 дБ — это замысел, а не потеря.
+
+**Интерфейс берёт цвет от состояния.** Один атрибут `data-m` на `<html>` перекрашивает фоновую подсветку, пропеллер, оба ползунка, активные чипы и выделение текста. Типизированные custom properties (`@property`) позволяют этим цветам интерполироваться, поэтому переключение РАЗГОН → ФОКУС → ПОКОЙ перетекает за полсекунды, а не щёлкает; браузеры без поддержки просто сменят цвет мгновенно.
+
+**Ползунки наконец выглядят заполненными.** Дорожка закрашена до бегунка — `--p` из JS для WebKit и `::-moz-range-progress` для Firefox. Градиент обрезан по `padding-box`, что убрало цветной серп, который выглядывал за скругление правого края дорожки.
+
+**Тач-поведение вычищено.** Убрана серая подсветка тапа Android, контролы больше не выделяют текст при долгом нажатии, а `touch-action: manipulation` снимает задержку двойного тапа — отклик на нажатие при этом остаётся. Пропеллер лишился кольца-бейджа, а логотип чуть ужимается ниже 420 px, чтобы подпись держалась в одну строку на 390 px. На мобильном чипы таймера снова таблетки, а не вертикальные капсулы.
+
+**Аудиограф больше не растёт до бесконечности.** Каждый one-shot — кик, хэт, снейр, суб, плак, пианино и каждое созвучие пэда — снимает свою цепочку с шины, когда отзвучал хвост. В РАЗГОНЕ за три минуты игры накапливалось 350 мёртвых фильтров.
+
+**Исправления**
+
+- Петля розового шума щёлкала раз в 2 секунды: состояние фильтра на стыке не совпадало само с собой. Теперь у неё есть кроссфейд-прогон — тот же приём, что уже применялся к коричневому шуму.
+- Когда телефон ставил контекст на паузу (экран, потеря аудиофокуса), цепочка `setTimeout` у ПОКОЯ продолжала идти, а `ctx.currentTime` стоял на месте: до 40 звонков набирались в один момент и после разморозки стартовали разом с клиппингом. Теперь звонок не планируется, пока часы контекста реально не идут.
+- Цикл анимации пропеллера засыпает при нулевой скорости вместо 60 пробуждений в секунду — 391 мс машинного времени на 30 с простоя, измерено.
+- Колокольчик окончания таймера перенастроен (атака 0.12 с, срез 800 Гц) — теперь это мягкий сигнал, а не будильник.
+
+<details>
+<summary><b>🕰 Прошлые версии</b> — 2.3 и 2.1 подробно</summary>
+
+### 2.3
 
 **Плеер перестал ездить.** Имя брейка живёт в плашке фиксированной ширины — она закрывает ~90% банка, полное имя лежит в подсказке. Когда кубик включён, его слот остаётся занятым, поэтому смена пресета больше не сдвигает ползунки на пиксель, а длинные подписи обрезаются, а не наезжают друг на друга. Ряд целиком держится вплоть до 633 px.
 
@@ -291,8 +346,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 - Расшифрованный брейк освобождает свою base64-строку: примерно треть банка больше не висит в памяти впустую.
 - Мёртвый код убран, а плеер теперь рисуется одним проходом, а не четырьмя функциями, пишущими в одни и те же узлы.
 
-<details>
-<summary><b>🕰 Прошлые версии</b> — 2.1 подробно</summary>
+### 2.1
 
 [Addiction.fm теперь на хосте!](https://sewerdev.github.io/Addiction.fm/)
 
@@ -351,7 +405,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 |:----------|:-----|:---------|
 | 🔴 **РАЗГОН** | Amen-break · Jungle · ~180 BPM | Энергия, фокус на задаче, движение |
 | 🔵 **ФОКУС** | Глубокий эмбиент | Суббасс, тёмные пэды, редкие щипки — никаких ударных |
-| 🟢 **ПОКОЙ** | Медленный дрон + дождь | Расслабление, сон, восстановление |
+| 🟣 **ПОКОЙ** | Дышащий дрон + дождь | Расслабление, сон, восстановление |
 
 ---
 
@@ -361,7 +415,7 @@ Made by **Sewerbox** / [sewerdev](https://github.com/sewerdev) · Telegram: [@Ve
 
 - **РАЗГОН** — брейк из банка на 268 петель нарезается по 16-м долям с DJ-прыжками, статтерами и роллами, мягкое пианино поверх
 - **ФОКУС** — суббасс синтезируется в заданной тональности, тёмные пэды со свипом lowpass от LFO на 0.06 Гц
-- **ПОКОЙ** — дрон из расстроенных осцилляторов, фильтрованный шум, медленные колокольчики
+- **ПОКОЙ** — дрон из расстроенных осцилляторов, фильтрованный шум, низкие колокольчики; вся подкладка качается дыхательным LFO на 0.09 Гц
 
 ---
 
