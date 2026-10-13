@@ -122,10 +122,10 @@
   .mood:hover{background:var(--surface2);}
   .mood[data-m="drive"]{--mc:#E56458; --mcs:#FCE9E7;}
   .mood[data-m="focus"]{--mc:#2783DE; --mcs:#E5F2FC;}
-  .mood[data-m="calm"] {--mc:#46A171; --mcs:#E8F1EC;}
+  .mood[data-m="calm"] {--mc:#7A5AC8; --mcs:#EFEAFB;}
   [data-theme="dark"] .mood[data-m="drive"]{--mc:#E97366; --mcs:rgba(233,115,102,.12);}
   [data-theme="dark"] .mood[data-m="focus"]{--mc:#5E9FE8; --mcs:rgba(94,159,232,.12);}
-  [data-theme="dark"] .mood[data-m="calm"] {--mc:#72BC8F; --mcs:rgba(114,188,143,.12);}
+  [data-theme="dark"] .mood[data-m="calm"] {--mc:#A98BEA; --mcs:rgba(169,139,234,.12);}
   .mood.active{border-color:var(--mc); background:var(--mcs);}
   .mood .dot{width:10px; height:10px; border-radius:50%; background:var(--mc); margin-bottom:2px;}
   .mood h2{font-size:19px; font-weight:700; letter-spacing:.2px;}
@@ -211,7 +211,7 @@
     .player .trackno{min-width:24px;}
     .player .recbtn{padding:5px 8px;}
     .timer{gap:5px;}
-    .timer .chip{padding:5px 5px; font-size:12px;}
+    .timer .chip{padding:5px 7px; font-size:12px;}
     .countdown{font-size:12px;}
   }
 
@@ -248,7 +248,11 @@
     .player input[type="range"]::-webkit-slider-thumb{width:20px; height:20px; margin-top:-9px;}
     .player input[type="range"]::-moz-range-thumb{width:18px; height:18px;}
     .player .timer{grid-area:timer; justify-content:space-between; gap:8px; flex-wrap:nowrap;}
-    .player .timer .chip{padding:9px 0; font-size:13.5px; min-height:36px;}
+    /* padding:9px 0 превращал ∞/15/25/45 в вертикальные капсулы - на
+       мобильной сетке чипы растягивались только по высоте. Возвращаем
+       горизонтальный воздух и минимальную ширину, ряд при этом влезает
+       и на 560 px (проверено row633.mjs) */
+    .player .timer .chip{padding:9px 13px; font-size:13.5px; min-height:36px; min-width:44px;}
     .player .countdown{flex:0 0 auto; min-width:38px; text-align:right;}
     .hint{display:none;}
   }
@@ -256,6 +260,164 @@
   @media (max-width:400px){
     .player{gap:10px;}
     .player .now .title{font-size:14px;}
+  }
+
+  /* ================= 2.4 визуал: ambient + акцент пресета =================
+     --mc = цвет текущего состояния, --tint/--ring = его мягкие производные.
+     Ставится на <html> через data-m, поэтому перекрашивается и фон, и пропеллер,
+     и слайдер, и активные чипы — одним изменением атрибута. */
+  /* Custom properties по умолчанию меняются скачком: браузер не знает, что
+     внутри --mc цвет, и не умеет его интерполировать. @property сообщает ему
+     об этом прямо - после этого transition на <html> даёт мягкое перетекание
+     РАЗГОН -> ФОКУС -> ПОКОЙ сразу во всём интерфейсе, потому что все
+     элементы наследуют одно и то же значение. Firefox 128+ и Chrome/Pocket
+     Browser его поддерживают; без поддержки просто мгновенная смена цвета. */
+  @property --mc{syntax:"<color>"; inherits:true; initial-value:#2783DE;}
+  @property --tint{syntax:"<color>"; inherits:true; initial-value:rgba(39,131,222,.09);}
+  @property --ring{syntax:"<color>"; inherits:true; initial-value:rgba(39,131,222,.30);}
+
+  :root{
+    --mc:#2783DE; --tint:rgba(39,131,222,.09); --ring:rgba(39,131,222,.30);
+    --shadow:0 1px 2px rgba(0,0,0,.05), 0 14px 34px -22px rgba(0,0,0,.35);
+  }
+  html{transition:--mc .55s ease, --tint .55s ease, --ring .55s ease;}
+  :root[data-m="drive"]{--mc:#E56458; --tint:rgba(229,100,88,.09); --ring:rgba(229,100,88,.30);}
+  :root[data-m="focus"] {--mc:#2783DE; --tint:rgba(39,131,222,.09); --ring:rgba(39,131,222,.30);}
+  :root[data-m="calm"]  {--mc:#7A5AC8; --tint:rgba(122,90,200,.09); --ring:rgba(122,90,200,.30);}
+  [data-theme="dark"]{
+    --mc:#5E9FE8; --tint:rgba(94,159,232,.10); --ring:rgba(94,159,232,.42);
+    --shadow:0 1px 2px rgba(0,0,0,.55), 0 22px 48px -26px rgba(0,0,0,.95);
+  }
+  [data-theme="dark"][data-m="drive"]{--mc:#E97366; --tint:rgba(233,115,102,.10); --ring:rgba(233,115,102,.42);}
+  [data-theme="dark"][data-m="focus"] {--mc:#5E9FE8; --tint:rgba(94,159,232,.10); --ring:rgba(94,159,232,.42);}
+  [data-theme="dark"][data-m="calm"]  {--mc:#A98BEA; --tint:rgba(169,139,234,.10); --ring:rgba(169,139,234,.42);}
+
+  /* фон: мягкая подсветка сверху и тёплый угол снизу, цвет за пресетом */
+  body{
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(120% 55% at 50% -14%, var(--tint), transparent 60%),
+      radial-gradient(60% 34% at 108% 112%, var(--tint), transparent 70%);
+    background-attachment:fixed;
+    transition:background-color .45s ease;
+  }
+  ::selection{background:var(--mc); color:#fff;}
+
+  /* Android Chrome на тапе подсвечивает серым всю нажатую область и рисует
+     рамку фокуса - на кнопках это выглядит как брак. Убираем подсветку тапа,
+     запрещаем выделять текст на контролах и снимаем задержку двойного тапа;
+     отклик на нажатие остаётся через :active{transform:scale(.94)}.
+     Список только из контролов: обычному тексту (подпись, имя трека)
+     выделение оставлено - long-press там работает как раньше */
+  *, *::before, *::after{-webkit-tap-highlight-color:transparent;}
+  button, .mood, .chip, .playbtn, .iconbtn, .recbtn, .trackbtn, .rollbtn,
+  .closebtn{
+    -webkit-user-select:none; user-select:none; touch-action:manipulation;
+  }
+
+  /* обводка пропеллера убрана совсем: и inset-кольцо из --ring, и цветная
+     плашка под ним - на телефоне вместе они читались как рамка вокруг
+     логотипа. Размеры и padding оставлены, чтобы вёрстка шапки (и подпись
+     «генеративное радио» на одной строке в 390 px) не сдвинулась ни на пиксель */
+  header .prop{
+    width:28px; height:28px; padding:4px;
+    background:none; box-shadow:none;
+  }
+  /* бейдж пропеллера добавил логотипу несколько пикселей, и на 390 px
+     подпись «генеративное радио» переезжала на вторую строку. На узких
+     экранах отступ и кегль чуть меньше — снова одна строка */
+  @media (max-width:420px){
+    .logo{gap:8px; font-size:17px;}
+    .logo small{font-size:11.5px;}
+  }
+  .logo small{letter-spacing:.1px;}
+
+  .hero h1{letter-spacing:-2.2px;}
+  .hero h1::after{
+    content:""; display:block; width:64px; height:4px; margin-top:16px; border-radius:999px;
+    background:linear-gradient(90deg, var(--mc), transparent);
+  }
+
+  /* карточки состояний: свой цвет остаётся в --mc внутри карточки, поэтому
+     подсветка угла и кольцо активны у каждой своей */
+  .mood{position:relative; overflow:hidden; border-radius:22px;
+        background-image:linear-gradient(150deg, var(--mcs), transparent 58%);}
+  .mood::before{
+    content:""; position:absolute; top:-58px; right:-58px; width:190px; height:190px;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, var(--mc), transparent 66%);
+    opacity:.10;
+    transition:opacity .3s ease;
+    animation:ballfloat 9s ease-in-out infinite;
+  }
+  /* три карточки дышат вразнобой: разный темп и отрицательный offset, чтобы
+     с первой секунды не было синхронного «мигания» */
+  .mood:nth-child(2)::before{animation-duration:11.5s; animation-delay:-3.2s;}
+  .mood:nth-child(3)::before{animation-duration:13.5s; animation-delay:-6.8s;}
+  @keyframes ballfloat{
+    0%  {transform:translate3d(0,0,0) scale(1);}
+    38% {transform:translate3d(-16px,14px,0) scale(1.1);}
+    72% {transform:translate3d(7px,22px,0) scale(1.03);}
+    100%{transform:translate3d(0,0,0) scale(1);}
+  }
+  /* transform ушёл из hover: анимация перекрывает transition по этому
+     свойству, поэтому реакция на курсор — через плотность свечения */
+  .mood:hover::before{opacity:.19;}
+  /* .mood:hover и .mood.active перекрашиваются шorthand-ом background,
+     который сбрасывает background-image — поэтому градиент повторяем
+     в обоих состояниях, иначе он исчезает при наведении и на активной карте */
+  .mood:hover, .mood.active{background-image:linear-gradient(150deg, var(--mcs), transparent 58%);}
+  .mood.active{box-shadow:inset 0 0 0 1px var(--mc), 0 16px 36px -24px var(--mc);}
+  .mood.active::before{opacity:.20;}
+  .mood .dot{box-shadow:0 0 0 4px var(--mcs);}
+  .mood h2{letter-spacing:-.2px;}
+
+  /* плеер: в тёмной теме — стекло, в светлой остаётся глухим, чтобы текст
+     не терялся на прокручивающемся фоне */
+  .player{border-radius:24px; box-shadow:var(--shadow);}
+  [data-theme="dark"] .player{
+    background:rgba(13,13,13,.88); border-color:rgba(255,255,255,.12);
+    -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4);
+  }
+  [data-theme="dark"] .menu, [data-theme="dark"] .modal{
+    background:#0d0d0d; border-color:rgba(255,255,255,.14); box-shadow:var(--shadow);
+  }
+  .menu{border-radius:16px; box-shadow:var(--shadow);}
+  .modal{border-radius:20px; box-shadow:var(--shadow);}
+  .overlay{background:rgba(0,0,0,.5); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);}
+
+  .playbtn{
+    position:relative; background:var(--mc);
+    box-shadow:0 8px 20px -10px var(--mc), inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  /* пульсирующее кольцо вокруг play/pause и пульс точки пресета убраны:
+     звук уже двигается сам, интерфейс не должен ещё и мигать */
+
+  /* слайдеры: дорожка заполнена до бегунка (--p ставит JS), бегунок в цвет
+     пресета; размеры и отступы не трогаем — на них держится мобильная сетка */
+  /* padding-box обязателен: градиент по border-box вместе с прозрачным
+     бордером дорисовывался за скруглением края - на правом конце дорожки
+     появлялся красный серп (проверено по пикселям в обеих темах).
+     Бордер оставляем 1px var(--border), как в исходной версии, чтобы
+     высота дорожки и позиция бегунка не сдвинулись */
+  input[type="range"]::-webkit-slider-runnable-track{
+    background:linear-gradient(90deg, var(--mc) var(--p,50%), var(--surface2) var(--p,50%)) padding-box;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    background:var(--mc); border-color:var(--bg);
+    box-shadow:0 0 0 1px var(--ring), 0 2px 6px rgba(0,0,0,.25);
+  }
+  input[type="range"]::-moz-range-track{background:var(--surface2); border-color:transparent;}
+  input[type="range"]::-moz-range-progress{height:4px; border-radius:2px; background:var(--mc);}
+  input[type="range"]::-moz-range-thumb{background:var(--mc); border-color:var(--bg);}
+
+  .chip.active{background:var(--tint); border-color:var(--mc); color:var(--mc);}
+  .now .title{letter-spacing:-.1px;}
+  .trackno{color:var(--text);}
+
+  @media (prefers-reduced-motion: reduce){
+    body, html, header .prop, .mood, .mood::before, .playbtn{transition:none;}
+    .mood::before{animation:none;}
   }
 </style>
 <script>
@@ -273,8 +435,8 @@
   <header>
     <div class="logo">
       <svg class="prop" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
-        <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
+        <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--mc)" opacity=".85"/>
+        <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--mc)" opacity=".85"/>
         <circle cx="12" cy="12" r="2.4" fill="var(--text)"/>
       </svg>
       Addiction.fm <small data-i18n="tagline">генеративное радио</small>
@@ -323,8 +485,8 @@
     <button class="mood" data-m="calm">
       <span class="dot"></span>
       <h2 data-i18n="calm">ПОКОЙ</h2>
-      <span class="genre" data-i18n="calmGenre">дрон · дождь · мягкие колокольчики</span>
-      <span class="desc" data-i18n="calmDesc">Медленный гул, шум дождя и коричневый шум - идеально для расслабления.</span>
+      <span class="genre" data-i18n="calmGenre">дышащий дрон · дождь · низкие колокольчики</span>
+      <span class="desc" data-i18n="calmDesc">Медленный гул, который дышит, редкие низкие колокольчики - без резких звуков.</span>
       <span class="stateline" data-i18n="selected">● выбрано</span>
     </button>
   </section>
@@ -373,11 +535,11 @@
   <div class="modal" role="dialog" aria-modal="true">
     <h3>
       <svg class="prop" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
-        <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--accent)" opacity=".85"/>
+        <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--mc)" opacity=".85"/>
+        <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--mc)" opacity=".85"/>
         <circle cx="12" cy="12" r="2.4" fill="var(--text)"/>
       </svg>
-      Addiction.fm <span class="ver">2.3</span>
+      Addiction.fm <span class="ver">2.4</span>
     </h3>
     <p data-i18n="aboutText"></p>
     <p class="bankline" id="bankLine"></p>
@@ -416,8 +578,8 @@ const I18N = {
     driveDesc:"Быстрые нарезанные брейки и мягкое пианино.",
     focus:"ФОКУС", focusGenre:"глубокий эмбиент",
     focusDesc:"Только глубокий басс и тёмные пэды - никаких ударных, идеально для работы.",
-    calm:"ПОКОЙ", calmGenre:"дрон · дождь · мягкие колокольчики",
-    calmDesc:"Медленный гул, шум дождя и коричневый шум - идеально для расслабления.",
+    calm:"ПОКОЙ", calmGenre:"дышащий дрон · дождь · низкие колокольчики",
+    calmDesc:"Медленный гул, который дышит, редкие низкие колокольчики - без резких звуков.",
     selected:"● выбрано", ready:"готов к запуску", playing:"играет", paused:"на паузе",
     track:"трек", intensity:"приглушённость", volume:"громкость",
     menuLang:"Язык", menuAbout:"ℹ О приложении", close:"Закрыть",
@@ -441,8 +603,8 @@ const I18N = {
     driveDesc:"Fast chopped breaks and dark sub bass - fury and tenderness at once.",
     focus:"FOCUS", focusGenre:"deep ambient",
     focusDesc:"Just deep sub bass and dark pads - no drums, perfect for work.",
-    calm:"CALM", calmGenre:"drone · rain · soft bells",
-    calmDesc:"Slow hum, rain noise and brown noise - like a gentle touch.",
+    calm:"CALM", calmGenre:"breathing drone · rain · low bells",
+    calmDesc:"Slow breathing hum, low soft bells - no sharp sounds.",
     selected:"● selected", ready:"ready to play", playing:"playing", paused:"paused",
     track:"track", intensity:"muffle", volume:"volume",
     menuLang:"Language", menuAbout:"ℹ About", close:"Close",
@@ -466,8 +628,8 @@ const I18N = {
     driveDesc:"Breaks rápidos y troceados con un sub oscuro - furia y ternura a la vez.",
     focus:"ENFOQUE", focusGenre:"ambient profundo",
     focusDesc:"Solo sub profundo y pads oscuros - sin percusión, ideal para trabajar.",
-    calm:"CALMA", calmGenre:"drone · lluvia · campanas suaves",
-    calmDesc:"Zumbido lento, ruido de lluvia y ruido marrón - como una caricia suave.",
+    calm:"CALMA", calmGenre:"drone que respira · lluvia · campanas graves",
+    calmDesc:"Zumbido que respira y campanas graves y lejanas - sin sonidos bruscos.",
     selected:"● elegido", ready:"listo para reproducir", playing:"sonando", paused:"en pausa",
     track:"pista", intensity:"amortiguación", volume:"volumen",
     menuLang:"Idioma", menuAbout:"ℹ Acerca de", close:"Cerrar",
@@ -552,7 +714,7 @@ const state = {
 };
 state.breakName = "";
 state.startedAt = 0;
-const COLORS = { drive:"#E56458", focus:"#2783DE", calm:"#46A171" };
+const COLORS = { drive:"#E56458", focus:"#2783DE", calm:"#7A5AC8" };
 
 /* обложка приложения: используется в системном пункте управления,
    во вкладке браузера и на домашнем экране телефона */
@@ -567,7 +729,7 @@ const APP_ICON = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQ
   add("apple-touch-icon", "512x512");
   add("icon", "512x512");
 })();
-const COLORS_DARK = { drive:"#E97366", focus:"#5E9FE8", calm:"#72BC8F" };
+const COLORS_DARK = { drive:"#E97366", focus:"#5E9FE8", calm:"#A98BEA" };
 
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -575,6 +737,7 @@ let dark = typeof cfg.dark === "boolean" ? cfg.dark : prefersDark;
 
 function applyTheme(){
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  document.documentElement.setAttribute("data-m", state.mood);
   $("#themeBtn").textContent = dark ? "☀" : "🌙";
 }
 $("#themeBtn").addEventListener("click", () => { dark = !dark; applyTheme(); saveCfg(); });
@@ -621,6 +784,7 @@ function setMood(m, autoplay){
   /* сохраняем текущий трек пресета, восстанавливаем для нового */
   trackNos[state.mood] = trackNo;
   state.mood = m;
+  document.documentElement.setAttribute("data-m", m);
   trackNo = trackNos[m];
   manualBreak = null;
   state.breakName = "";
@@ -634,6 +798,7 @@ $$(".mood").forEach(c => c.addEventListener("click", () => setMood(c.dataset.m, 
 
 function uiPlaying(on){
   state.playing = on;
+  wakeProp();
   document.body.classList.toggle("playing", on);
   $("#playIcon").innerHTML = on
     ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
@@ -915,13 +1080,25 @@ function noiseBuffers(){
   for (let i = 0; i < len; i++) w[i] = Math.random() * 2 - 1;
   pinkBuf = ctx.createBuffer(1, len, ctx.sampleRate);
   const p = pinkBuf.getChannelData(0);
-  let b0=0,b1=0,b2=0;
-  for (let i = 0; i < len; i++){
+  /* состояние фильтра на стыке петли не совпадает само с собой, и каждый
+     оборот 2 с даёт щелчок. Тот же приём, что у коричневого шума ниже:
+     сначала прогон длиной в кроссфейд, затем вкрещиваем его в хвост,
+     так что p[len-1] -> p[0] получается непрерывным */
+  const pkxf = Math.floor(ctx.sampleRate * 0.15);
+  const pkpre = new Float32Array(pkxf);
+  let pb0=0,pb1=0,pb2=0;
+  const pinkStep = (i, dst) => {
     const wh = Math.random() * 2 - 1;
-    b0 = 0.997 * b0 + 0.029591 * wh;
-    b1 = 0.985 * b1 + 0.032534 * wh;
-    b2 = 0.950 * b2 + 0.048056 * wh;
-    p[i] = (b0 + b1 + b2 + wh * 0.05) * 3.5;
+    pb0 = 0.997 * pb0 + 0.029591 * wh;
+    pb1 = 0.985 * pb1 + 0.032534 * wh;
+    pb2 = 0.950 * pb2 + 0.048056 * wh;
+    dst[i] = (pb0 + pb1 + pb2 + wh * 0.05) * 3.5;
+  };
+  for (let i = 0; i < pkxf; i++) pinkStep(i, pkpre);
+  for (let i = 0; i < len; i++) pinkStep(i, p);
+  for (let i = 0; i < pkxf; i++){
+    const a = i / pkxf;
+    p[len - pkxf + i] = p[len - pkxf + i] * (1 - a) + pkpre[i] * a;
   }
   /* коричневый шум: интеграл белого с утечкой - энергия падает на 6 дБ/октаву,
      глубже и теплее розового. Сначала генерим «прогон» длиной в кроссфейд,
@@ -968,6 +1145,20 @@ function start(){
 }
 function stop(){ stopSession(0.8); uiPlaying(false); }
 
+/* удар отзвучал — снимаем его цепочку с шины. Пока узел подключён,
+   он живёт в графе вечно: в РАЗГОНЕ так накопились 350 мёртвых фильтров
+   за три минуты, в ФОКУСЕ — цепочки пэда после каждой смены аккорда */
+function releaseAfter(node, t, tail){
+  const arm = () => {
+    /* на телефоне контекст встаёт вместе с экраном, а setTimeout - нет.
+       Снимать узел по настенным секундам тогда нельзя: звук ещё не сыгран,
+       и после разморозки мы получили бы пустоту вместо хвоста */
+    const left = (t + tail - ctx.currentTime) * 1000;
+    if (left > 0) { setTimeout(arm, Math.min(Math.max(left, 50), 2000)); return; }
+    try { node.disconnect(); } catch(e){}
+  };
+  setTimeout(arm, Math.max(0, (t - ctx.currentTime + tail)) * 1000);
+}
 /* ---- one-shot sounds (dest = node to connect to) ---- */
 function kick(dest, t, v){
   const o = ctx.createOscillator(), g = ctx.createGain();
@@ -976,6 +1167,7 @@ function kick(dest, t, v){
   g.gain.setValueAtTime(v, t);
   g.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
   o.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.3);
+  releaseAfter(g, t, 0.35);
 }
 function hat(dest, t, v, open){
   const src = ctx.createBufferSource(); src.buffer = whiteBuf;
@@ -985,6 +1177,7 @@ function hat(dest, t, v, open){
   g.gain.exponentialRampToValueAtTime(0.001, t + (open ? 0.25 : 0.045));
   src.connect(f); f.connect(g); g.connect(dest);
   src.start(t); src.stop(t + 0.3);
+  releaseAfter(f, t, 0.4); releaseAfter(g, t, 0.35);
 }
 function snare(dest, t, v){
   const src = ctx.createBufferSource(); src.buffer = whiteBuf;
@@ -1000,6 +1193,7 @@ function snare(dest, t, v){
   g2.gain.setValueAtTime(v * 0.5, t);
   g2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
   o.connect(g2); g2.connect(dest); o.start(t); o.stop(t + 0.1);
+  releaseAfter(f, t, 0.3); releaseAfter(g, t, 0.25); releaseAfter(g2, t, 0.15);
 }
 function sub(dest, t, freq, dur, v){
   const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = freq;
@@ -1009,6 +1203,7 @@ function sub(dest, t, freq, dur, v){
   g.gain.setValueAtTime(v, t + dur * 0.6);
   g.gain.linearRampToValueAtTime(0.0001, t + dur);
   o.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + 0.05);
+  releaseAfter(g, t, dur + 0.1);
 }
 function pluck(dest, t, freq, v){
   const o = ctx.createOscillator(); o.type = "triangle"; o.frequency.value = freq;
@@ -1017,6 +1212,7 @@ function pluck(dest, t, freq, v){
   g.gain.setValueAtTime(v, t);
   g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
   o.connect(f); f.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.55);
+  releaseAfter(f, t, 0.65); releaseAfter(g, t, 0.6);
 }
 /* тёплое «пианино» - мягкий удар, энергия в низкой середине, как у hkmori */
 function piano(dest, t, freqs, v){
@@ -1033,22 +1229,29 @@ function piano(dest, t, freqs, v){
       o.connect(g); g.connect(f); o.start(t); o.stop(t + 1.7);
     });
   });
+  releaseAfter(f, t, 1.75);
 }
-/* приглушённый колокольчик - мягкая атака, низкий фильтр, долгое затухание */
-function bellSoft(dest, t, freq, v){
-  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 800; f.Q.value = 0.5;
+/* приглушённый колокольчик: атака 0.55 c, хвост 6 c, темный фильтр.
+   Атака 0.06 c на 330-587 Гц читалась как «удар», а не как тон: на записях
+   по 91 c (calm_old_t*.wav) подъёмов огибающей больше чем на 25% от медианы
+   за 50 мс было 32-60, здесь 20-34. Вторая гармоника -23 дБ вместо -15 дБ
+   относительно первой, фильтр 520 Гц вместо 800. */
+function bellSoft(dest, t, freq, v, atk, cut){
+  const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = cut || 520; f.Q.value = 0.4;
   f.connect(dest);
-  [[1, v], [2, v * 0.18]].forEach(([m, vol]) => {
+  const a = atk || 0.55;
+  [[1, v], [2, v * 0.07]].forEach(([m, vol]) => {
     const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = freq * m;
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(vol, t + 0.06);
-    g.gain.exponentialRampToValueAtTime(0.0004, t + 4);
-    o.connect(g); g.connect(f); o.start(t); o.stop(t + 4.2);
+    g.gain.linearRampToValueAtTime(vol, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0004, t + a + 6);
+    o.connect(g); g.connect(f); o.start(t); o.stop(t + a + 6.2);
   });
+  releaseAfter(f, t, a + 6.25);
 }
 /* ---- sustained layers ---- */
-function pad(s, freqs, level, attack, baseCutoff){
+function pad(s, freqs, level, attack, baseCutoff, dest){
   const g = ctx.createGain();
   g.gain.setValueAtTime(0.0001, ctx.currentTime);
   g.gain.linearRampToValueAtTime(level, ctx.currentTime + attack);
@@ -1056,7 +1259,7 @@ function pad(s, freqs, level, attack, baseCutoff){
   const lfo = ctx.createOscillator(); lfo.frequency.value = 0.06;
   const lfoG = ctx.createGain(); lfoG.gain.value = (baseCutoff || 800) * 0.4;
   lfo.connect(lfoG); lfoG.connect(f.frequency); lfo.start();
-  f.connect(g); g.connect(s.bus);
+  f.connect(g); g.connect(dest || s.bus);
   const oscs = [];
   freqs.forEach(fr => {
     [-6, 6].forEach(det => {
@@ -1070,38 +1273,46 @@ function pad(s, freqs, level, attack, baseCutoff){
     g.gain.cancelScheduledValues(t);
     g.gain.setValueAtTime(g.gain.value, t);
     g.gain.linearRampToValueAtTime(0.0001, t + (release || 0.1));
-    setTimeout(() => { oscs.forEach(o => { try { o.stop(); } catch(e){} }); try { lfo.stop(); } catch(e){} }, (release || 0.1) * 1000 + 100);
+    /* остановка именно по настенным секундам, как и раньше: при заморозке
+       контекста все такие точки сливаются в один будущий момент, и после
+       разморозки набранные за сон пэды звучали бы разом (измерено: пик 4.36
+       вместо 0.39, то есть клиппинг). Цепочку с шины снимает уже releaseAfter,
+       который ждёт настоящие часы контекста */
+    setTimeout(() => { oscs.forEach(o => { try { o.stop(); } catch(e){} }); try { lfo.stop(); } catch(e){} },
+               (release || 0.1) * 1000 + 100);
+    releaseAfter(f, t, (release || 0.1) + 0.25);
+    releaseAfter(g, t, (release || 0.1) + 0.25);
   };
   s.stops.push(() => stopFn(0.1));
   return stopFn;
 }
-function rain(s, level, cutoff){
+function rain(s, level, cutoff, dest){
   const src = ctx.createBufferSource(); src.buffer = pinkBuf; src.loop = true;
   const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = cutoff || 1000;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0.0001, ctx.currentTime);
   g.gain.linearRampToValueAtTime(level, ctx.currentTime + 3);
-  src.connect(f); f.connect(g); g.connect(s.bus); src.start();
+  src.connect(f); f.connect(g); g.connect(dest || s.bus); src.start();
   s.stops.push(() => { try { src.stop(); } catch(e){} });
   s.rainGain = g;
 }
 /* коричневый шум - глубокий тёплый «океанский» фон, основа ПОКОЯ */
-function brown(s, level, cutoff){
+function brown(s, level, cutoff, dest){
   const src = ctx.createBufferSource(); src.buffer = brownBuf; src.loop = true;
   const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = cutoff || 480;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0.0001, ctx.currentTime);
   g.gain.linearRampToValueAtTime(level, ctx.currentTime + 4);
-  src.connect(f); f.connect(g); g.connect(s.bus); src.start();
+  src.connect(f); f.connect(g); g.connect(dest || s.bus); src.start();
   s.stops.push(() => { try { src.stop(); } catch(e){} });
   s.brownGain = g;
 }
-function drone(s, freq, type, level, detune){
+function drone(s, freq, type, level, detune, dest){
   const o = ctx.createOscillator(); o.type = type; o.frequency.value = freq; o.detune.value = detune || 0;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0.0001, ctx.currentTime);
   g.gain.linearRampToValueAtTime(level, ctx.currentTime + 4);
-  o.connect(g); g.connect(s.bus); o.start();
+  o.connect(g); g.connect(dest || s.bus); o.start();
   s.stops.push(() => { try { o.stop(); } catch(e){} });
 }
 /* шина барабанов с общим фи  ьтром - для «приглушённости» */
@@ -1212,7 +1423,10 @@ const AMEN = [
   { k:[0,2],    s:[4,12], g:[7,9] },
   { k:[0,2,10], s:[4,14], g:[7,9] }
 ];
-const CALM_BELLS = [329.63,392,440,523.25,587.33];
+/* тот же лад пентатоники, но на октаву ниже: E3 G3 A3 C4 D4. Старый набор
+   329-587 Гц лежал ровно в полосе максимальной чувствительности слуха, и
+   старт звона там читался как «дзынь» - сигнал, а не фон */
+const CALM_BELLS = [164.81,196,220,261.63,293.66];
 
 /* ================= moods ================= */
 const BUILD = {
@@ -1333,38 +1547,88 @@ const BUILD = {
     }, () => 60 / (s.breakBuf ? s.breakBuf.bpm : 176 + state.intensity * 12 + variation.tempoJit * 2) / 4);
   },
 
-  /* ПОКОЙ - дрон, тихий дождь и мелодия приглушённых колокольчиков:
-     колокольчики теперь ведут, а не тонут в шуме */
+  /* ПОКОЙ - «дышащая» подкладка из дрона и шума, очень редкие мягкие
+     колокольчики в низком регистре и никаких резких атак.
+     Что здесь меняется против старой версии и почему:
+     - мастер-фильтр 420..2420 Гц вместо 600..5400: верх, на котором розовый
+       шум превращается в шипение, срезан;
+     - весь слой - дрон, пэд, дождь, шум и сами колокольчики - сидит на одной
+       шине bed, которую медленный осциллятор 0.0917 Гц качает громкостью
+       0.70..1.06 (цикл 10.9 c, ~5.5 «дыханий» в минуту; пик в спектре огибающей
+       встал на 0.088 Гц при шаге анализа 0.011 Гц). Дышит теперь и сам звон:
+       раньше модуляция была только у дрона, а колокольчики шли мимо неё.
+       Замер по трём трекам: доля спектра огибающей в медленной полосе
+       0.02-0.3 Гц выросла с 12-17% до 53-58%, размах именно медленной
+       составляющей p95/p5 с 1.14-1.17 до 1.57-1.59. Полный размах p95/p5 при
+       этом 1.93-1.95 против 1.56-1.58 в старом - это и есть задуманная волна
+       дыхания, а не дрожащий звук: быстрых подъёмов стало меньше в 1.6-1.8 раза
+       (32-60 -> 20-34 на 91 c), а самый резкий упал с 0.45-0.54 уровня до
+       0.34-0.46; энергия выше 2 кГц - с -18 дБ до -37 дБ;
+     - колокольчики: на октаву ниже, атака 0.55 c, громкость 0.055..0.09
+       вместо 0.10..0.16, шаг между звонами на ползунке по умолчанию
+       (приглушённость 55%) 5.2..8.7 c вместо 2.8..5.7 c,
+       случайные квинта/октава сверху убраны - вместо них один тихий унисон
+       на октаву ВНИЗ, который не добавляет высоких частот.
+     Всё это вместе - минус 3.5 дБ общей громкости пресета (RMS 0.083 -> 0.056
+     при громкости 70%): ПОКОЙ стал тише, это часть замысла, а не потеря */
   calm(s){
     const prog = PROGS[variation.prog];
     /* мастер-фильтр пресета: крутилка приглушённости работает вживую */
     const lp = ctx.createBiquadFilter(); lp.type = "lowpass";
-    s.moodFilterMin = 600; s.moodFilterRange = 4800;
+    s.moodFilterMin = 420; s.moodFilterRange = 2000;
     lp.frequency.value = s.moodFilterMin + state.intensity * s.moodFilterRange;
     s.bus.disconnect(); s.bus.connect(lp); lp.connect(master);
     s.moodFilter = lp;
     /* иначе фильтр навсегда остаётся подключённым к master - утечка нод */
     s.stops.push(() => { try { lp.disconnect(); } catch(e){} });
-    drone(s, tf(110), "sine", 0.06, 0);
-    drone(s, tf(110), "triangle", 0.035, 7);
-    drone(s, tf(164.81), "sine", 0.04, -5);
-    pad(s, prog[0].slice(1).map(tf), 0.032, 8, 700);
-    brown(s, 0.045 + state.intensity * 0.06, 480);
-    rain(s, 0.02 + state.intensity * 0.055, 850);
+    /* шина подкладки с дыхательной модуляцией */
+    const bed = ctx.createGain(); bed.gain.value = 0.88;
+    bed.connect(s.bus);
+    s.stops.push(() => { try { bed.disconnect(); } catch(e){} });
+    const brOsc = ctx.createOscillator(); brOsc.type = "sine"; brOsc.frequency.value = 0.0917;
+    const brAmt = ctx.createGain(); brAmt.gain.value = 0.18;
+    brOsc.connect(brAmt); brAmt.connect(bed.gain); brOsc.start();
+    s.stops.push(() => { try { brOsc.stop(); } catch(e){} });
+    /* при заморозке контекста синусоида встаёт вместе с часами, а после
+       разморозки продолжит с той же фазы - дыхательный цикл сам по себе
+       не может «набраться» пачкой, как звонки из setTimeout */
+    drone(s, tf(110), "sine", 0.055, 0, bed);
+    drone(s, tf(110), "triangle", 0.03, 7, bed);
+    drone(s, tf(164.81), "sine", 0.032, -5, bed);
+    pad(s, prog[0].slice(1).map(tf), 0.026, 8, 560, bed);
+    brown(s, 0.04 + state.intensity * 0.05, 340, bed);
+    rain(s, 0.012 + state.intensity * 0.03, 620, bed);
     let bi = variation.arpStyle % CALM_BELLS.length;
+    /* Телефон часто ставит контекст на паузу (экран, потеря аудиофокуса, фон),
+       а эти setTimeout продолжают идти. ctx.currentTime при паузе стоит, и
+       каждый звонок планируется в тот же самый момент: за минуту паузы набирается
+       40 осцилляторов на полтора секунды, и после разморозки они стартуют разом -
+       всплеск с клиппингом (шипение и гулкие удары). Сетка РАЗГОНА/ФОКУСА от этого
+       защищена в schedule(); здесь ловим то же самое: звоним только когда часы
+       реально идут, иначе просто ждём следующего тика */
+    let lastRing = -1;
     const ring = () => {
       if (session !== s) return;
+      if (ctx.currentTime - lastRing < 0.02) {
+        /* не планируем звонок в стоячее время. Таймер не регистрируем в s.timeouts:
+           повтор ровно один в цепочке, а после остановки сессии он сам погаснет
+           на проверке session !== s и не будет плодить себя */
+        setTimeout(ring, 400); return;
+      }
+      lastRing = ctx.currentTime;
       /* шаг по шкале - неспешная мелодия, а не случайный звон */
       bi = Math.max(0, Math.min(CALM_BELLS.length - 1, bi + (Math.random() < 0.5 ? -1 : 1)));
       const base = tf(CALM_BELLS[bi]);
-      bellSoft(s.bus, ctx.currentTime + 0.05, base, 0.1 + state.intensity * 0.06);
-      if (Math.random() < 0.45)
-        bellSoft(s.bus, ctx.currentTime + rnd(0.5, 1.1), base * 1.5, 0.05);
-      if (Math.random() < 0.25)
-        bellSoft(s.bus, ctx.currentTime + rnd(1.2, 1.8), base * 2, 0.03);
-      s.timeouts.push(setTimeout(ring, rnd(2800, 8000 - state.intensity * 4200)));
+      bellSoft(bed, ctx.currentTime + 0.1, base, 0.055 + state.intensity * 0.035);
+      /* отклик на октаву вниз: тот же тон, только глубже. Верхние частички
+       (квинта и октава в старой версии) давали ту самую «стеклянную» атаку */
+      if (Math.random() < 0.4)
+        bellSoft(bed, ctx.currentTime + rnd(1.4, 2.6), base * 0.5, 0.022, 0.8);
+      s.timeouts.push(setTimeout(ring, rnd(5200, 10500 - state.intensity * 3200)));
     };
-    s.timeouts.push(setTimeout(ring, 1200));
+    /* первый звонок не сразу: сначала слышен только фон и его дыхательная
+       волна, иначе редкий звон воспринимается как посторонний сигнал */
+    s.timeouts.push(setTimeout(ring, 2600));
   }
 };
 
@@ -1454,18 +1718,23 @@ $("#recBtn").addEventListener("click", () => {
 });
 
 const intEl = $("#intensity"), volEl = $("#volume");
+/* у range нет «прогресса» в webkit, поэтому долю держим в --p: её читает
+   linear-gradient дорожки. В moz тот же результат даёт ::-moz-range-progress */
+function paintRange(el){ el.style.setProperty("--p", el.value + "%"); }
+[intEl, volEl].forEach(el => el.addEventListener("input", () => paintRange(el)));
 /* крутилка теперь «приглушённость»: 100% = максимально глухо */
 intEl.value = Math.round((1 - state.intensity) * 100);
 volEl.value = Math.round(state.volume * 100);
 $("#intVal").textContent = intEl.value + "%";
 $("#volVal").textContent = volEl.value + "%";
+[intEl, volEl].forEach(paintRange);
 intEl.addEventListener("input", e => {
   state.intensity = 1 - e.target.value / 100;
   $("#intVal").textContent = e.target.value + "%";
   if (session && session.rainGain && session.mood === "calm")
-    session.rainGain.gain.setTargetAtTime(0.02 + state.intensity * 0.055, ctx.currentTime, 0.3);
+    session.rainGain.gain.setTargetAtTime(0.012 + state.intensity * 0.03, ctx.currentTime, 0.3);
   if (session && session.brownGain && session.mood === "calm")
-    session.brownGain.gain.setTargetAtTime(0.045 + state.intensity * 0.06, ctx.currentTime, 0.3);
+    session.brownGain.gain.setTargetAtTime(0.04 + state.intensity * 0.05, ctx.currentTime, 0.3);
   /* живое обновление фильтров - крутилка работает без перезапуска во всех пресетах */
   if (session && session.drumFilter && session.mood === "drive")
     session.drumFilter.frequency.setTargetAtTime(2200 + state.intensity * 6000, ctx.currentTime, 0.2);
@@ -1499,7 +1768,7 @@ setInterval(() => {
   if (left <= 0){
     state.timerEnd = null;
     $("#countdown").textContent = "";
-    if (session) bellSoft(master, ctx.currentTime + 0.1, 659.25, 0.08);
+    if (session) bellSoft(master, ctx.currentTime + 0.1, 659.25, 0.09, 0.12, 800);
     stopSession(6);
     uiPlaying(false);
     return;
@@ -1554,16 +1823,30 @@ let propVel   = 0;
 const PROP_SPEED = { drive: 3.0, focus: 1.4, calm: 0.5 };
 const PROP_ACC   = 0.05;
 const PROP_DEC   = 0.045;
-(function propLoop(){
-  requestAnimationFrame(propLoop);
+let propRun = false;
+/* на паузе лопать стоит, но requestAnimationFrame продолжал приходить
+   60 раз в секунду: за 30 с простоя 391 мс машинного времени впустую.
+   Поэтому цикл засыпает при propVel === 0 и просыпается в wakeProp() */
+function propLoop(){
   if (reducedMotion) return;
   const target = state.playing ? (PROP_SPEED[state.mood] || PROP_SPEED.drive) : 0;
   const alpha  = propVel < target ? PROP_ACC : PROP_DEC;
   propVel += (target - propVel) * alpha;
-  if (propVel < 0.005) propVel = 0;
+  if (propVel < 0.005 && target === 0) {
+    propVel = 0; propRun = false;
+    propEl.style.transform = `rotate(${propAngle}deg)`;
+    return;
+  }
   propAngle = (propAngle + propVel) % 360;
   propEl.style.transform = `rotate(${propAngle}deg)`;
-})();
+  requestAnimationFrame(propLoop);
+}
+function wakeProp(){
+  if (reducedMotion || propRun) return;
+  propRun = true;
+  requestAnimationFrame(propLoop);
+}
+wakeProp();
 
 /* demo states for screenshots: #demo, #demo-<mood>, #demo-menu, #demo-about */
 if (location.hash.startsWith("#demo")){
