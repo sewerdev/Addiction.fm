@@ -442,7 +442,7 @@
       Addiction.fm <small data-i18n="tagline">генеративное радио</small>
     </div>
     <div class="hbtns">
-      <button class="iconbtn" id="settingsBtn" aria-label="Настройки" aria-haspopup="true">⚙</button>
+      <button class="iconbtn" id="settingsBtn" aria-label="Настройки" aria-haspopup="true" aria-controls="menu" aria-expanded="false">⚙</button>
       <button class="iconbtn" id="themeBtn" aria-label="Тема">🌙</button>
       <div class="menu" id="menu" hidden>
         <div class="menu-label" data-i18n="menuLang">Язык</div>
@@ -532,8 +532,8 @@
 </div>
 
 <div class="overlay" id="overlay" hidden>
-  <div class="modal" role="dialog" aria-modal="true">
-    <h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <h3 id="aboutTitle">
       <svg class="prop" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <ellipse cx="6" cy="12" rx="5" ry="2.6" fill="var(--mc)" opacity=".85"/>
         <ellipse cx="18" cy="12" rx="5" ry="2.6" fill="var(--mc)" opacity=".85"/>
@@ -1779,7 +1779,22 @@ setInterval(() => {
 
 /* keyboard */
 document.addEventListener("keydown", e => {
-  if (e.target.tagName === "INPUT") return;
+  if (e.key === "Escape"){
+    if (!overlay.hidden) closeAbout();
+    else if (!menu.hidden) { setMenu(false); $("#settingsBtn").focus(); }
+    return;
+  }
+  if (!overlay.hidden){
+    if (e.key === "Tab"){
+      const controls = [...overlay.querySelectorAll("a[href], button")];
+      const first = controls[0], last = controls[controls.length - 1];
+      if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+    return;
+  }
+  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest("button, a, input, select, textarea, [contenteditable]:not([contenteditable='false'])")) return;
   if (e.repeat) return; /* зажатая клавиша не должна молотить play/stop и треки */
   if (e.code === "Space"){ e.preventDefault(); state.playing ? stop() : start(); }
   if (e.key === "1") setMood("drive", true);
@@ -1788,24 +1803,37 @@ document.addEventListener("keydown", e => {
   if (e.key === "v" || e.key === "V" || e.key === "м" || e.key === "М") setTrack(trackNo - 1);
   if (e.key === "b" || e.key === "B" || e.key === "и" || e.key === "И") setTrack(trackNo + 1);
   if (diceOn && (e.key === "x" || e.key === "X" || e.key === "ч" || e.key === "Ч")) rollBreak();
-  if (e.key === "Escape"){ $("#overlay").hidden = true; $("#menu").hidden = true; }
 });
 
 /* settings menu + about */
 const menu = $("#menu"), overlay = $("#overlay");
+function setMenu(open){
+  menu.hidden = !open;
+  $("#settingsBtn").setAttribute("aria-expanded", String(open));
+}
+function closeAbout(){
+  overlay.hidden = true;
+  $(".wrap").inert = false;
+  $("#settingsBtn").focus();
+}
 $("#settingsBtn").addEventListener("click", e => {
   e.stopPropagation();
-  menu.hidden = !menu.hidden;
+  setMenu(menu.hidden);
 });
 document.addEventListener("click", e => {
-  if (!menu.hidden && !menu.contains(e.target) && e.target !== $("#settingsBtn")) menu.hidden = true;
+  if (!menu.hidden && !menu.contains(e.target) && e.target !== $("#settingsBtn")) setMenu(false);
 });
 $$(".chip.lang").forEach(c =>
   c.addEventListener("click", () => { lang = c.dataset.lang; applyLang(); saveCfg(); }));
 $("#diceBtn").addEventListener("click", () => { diceOn = !diceOn; renderPlayer(); saveCfg(); });
-$("#aboutBtn").addEventListener("click", () => { menu.hidden = true; overlay.hidden = false; });
-$("#closeAbout").addEventListener("click", () => { overlay.hidden = true; });
-overlay.addEventListener("click", e => { if (e.target === overlay) overlay.hidden = true; });
+$("#aboutBtn").addEventListener("click", () => {
+  setMenu(false);
+  overlay.hidden = false;
+  $(".wrap").inert = true;
+  $("#closeAbout").focus();
+});
+$("#closeAbout").addEventListener("click", closeAbout);
+overlay.addEventListener("click", e => { if (e.target === overlay) closeAbout(); });
 
 /* ================= init ================= */
 applyTheme();
